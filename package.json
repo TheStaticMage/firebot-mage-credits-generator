@@ -1,0 +1,37 @@
+{
+    "name": "mage-credits-generator",
+    "scriptOutputName": "mage-credits-generator",
+    "version": "0.0.1",
+    "description": "Effects and variables to generate rolling credits on screen",
+    "main": "",
+    "scripts": {
+        "build": "npm run build:version && npm run build:webpack",
+        "build:dev": "npm run build:version && npm run build:webpack && npm run copy",
+        "build:version": "node ./scripts/update-version.js",
+        "build:webpack": "webpack",
+        "copy": "node ./scripts/copy-build.js",
+        "prepare": ""
+    },
+    "author": "thestaticmage",
+    "license": "GNU3",
+    "devDependencies": {
+        "@crowbartools/firebot-custom-scripts-types": "^5.63.2",
+        "@eslint/js": "^9.28.0",
+        "@stylistic/eslint-plugin": "^4.4.1",
+        "@types/sprintf-js": "^1.1.4",
+        "terser-webpack-plugin": "^5.3.10",
+        "ts-loader": "^9.5.1",
+        "typescript": "^5.3.3",
+        "typescript-eslint": "^8.33.1",
+        "webpack": "^5.89.0",
+        "webpack-cli": "^6.0.1"
+    },
+    "volta": {
+        "node": "20.14.0",
+        "npm": "10.8.1"
+    },
+    "dependencies": {
+        "node-cache": "^5.1.2",
+        "sprintf-js": "^1.1.3"
+    }
+}
