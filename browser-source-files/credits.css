@@ -1,0 +1,113 @@
+/*
+Body settings apply to the entire page.
+*/
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: #fff;
+}
+
+/*
+h2 is used for section headings.
+*/
+h2 {
+    color: #fff;
+    font-size: 42px;
+    font-weight: 700;
+    margin-top: 0px;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/*
+#credits-outer-container is the outer container for the credits section. The
+default settings here position this to the right side of the screen (if you're
+on a 1920x1080 display).
+*/
+#credits-outer-container {
+    margin-left: 1350px;
+    margin-top: 50px;
+    overflow: hidden;
+}
+
+/*
+#credits-container is the inner container for the credits section. This moves
+from the bottom of the screen to the top of the screen when the credits are
+displayed. The width should be set in conjunction with the positioning of the
+outer container.
+*/
+#credits-container {
+    align-items: center;
+    background-color: rgba(150, 80, 190, 1.0);
+    border-radius: 25px;
+    display: block;
+    justify-content: center;
+    justify-content: space-around;
+    margin: 20px auto;
+    min-height: 800px;
+    overflow: hidden;
+    padding: 20px 10px;
+    position: relative;
+    text-align: center;
+    width: 500px;
+}
+
+/*
+div.entry is created for each entry in the credits. Each div displays the image
+and name of one person being credited.
+*/
+div.entry {
+    box-sizing: border-box;
+    display: block;
+    margin-top: 20px;
+    padding: 20px;
+    width: 100%;
+}
+
+/*
+div.separator is used to create a horizontal line between sections in the
+credits, if you want that.
+*/
+div.separator {
+    background-color: rgba(255, 255, 255, 0.4);
+    height: 3px;
+    margin-bottom: 60px;
+    margin-top: 40px;
+    width: 100%;
+}
+
+/*
+hr.separator-line is used to create a horizontal line between sections in the
+credits, if you want that. This line is hidden by default, but you can enable it
+by removing the display: none; line. This line is contained within the
+div.separator.
+*/
+hr.separator-line {
+    display: none;
+}
+
+/*
+img.avatar is used to style the avatar images of each person being credited. By
+default these images are set to be circular and have a fixed size. The images
+made available by Twitch are 300x300 pixels.
+*/
+img.avatar {
+    border-radius: 50%;
+    height: 200px;
+    width: 200px;
+}
+
+/*
+p.user-name is used to style the user names of each person being credited. The
+default settings here center the text directly below the avatar image.
+*/
+p.user-display-name {
+    color: #fff;
+    font-size: 32px;
+    font-weight: 300;
+    margin: 0 0 0 0;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    white-space: pre-line;
+}
