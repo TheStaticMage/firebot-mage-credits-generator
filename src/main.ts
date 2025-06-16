@@ -46,6 +46,13 @@ const script: Firebot.CustomScript<Parameters> = {
                 description: "The script will enumerate existing subscribers (and gifters) and add them to the credits data output.",
                 default: true,
                 tip: "You can speed up the script by disabling this option if you don't need to enumerate existing subscribers (and gifters)."
+            },
+            enableCustomCredits: {
+                type: "boolean",
+                title: "Enable Custom Credit Types",
+                description: "Enable the 'Register custom credit' effect so that you can register custom credit types in addition to the built-in credit types.",
+                default: false,
+                tip: "This enables an advanced effect allowing you to track custom credit types. Requires Firebot restart to take effect."
             }
         };
     },
