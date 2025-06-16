@@ -8,10 +8,25 @@ window.onload = function() {
     const parsedData = JSON.parse(atob(data));
     let hasPreviousSection = false;
     for (const section of sectionsConfig) {
+        if (!section.hasOwnProperty('header')) {
+            console.warn('Section is missing required "header" property:', section);
+            continue;
+        }
+
+        if (!section.hasOwnProperty('key')) {
+            console.warn('Section is missing required "key" property:', section);
+            continue;
+        }
+
         const entries = parsedData[section.key] || [];
         if (entries.length === 0) {
             console.log(`Skipping section: ${section.header} (${section.key}: no entries)`);
             continue;
+        }
+
+        let htmlCode = '{image}<p class="user-display-name">{displayName}</p>';
+        if (section.hasOwnProperty('html')) {
+            htmlCode = section.html;
         }
 
         if (hasPreviousSection) {
@@ -33,12 +48,17 @@ window.onload = function() {
             console.log(`Adding entry: ${entry.displayName} (${section.header})`);
             const entryDiv = document.createElement('div');
             entryDiv.className = 'entry';
-            entryDiv.innerHTML = `<img src="${entry.profilePicUrl}" alt="${entry.username}'s avatar" class="avatar" /><p class="user-display-name">${entry.displayName}</p>`;
-            sectionDiv.appendChild(entryDiv);
 
-            // Force loading the image to ensure it is cached
             const img = new Image();
             img.src = entry.profilePicUrl;
+            img.alt = `${entry.username}'s avatar`;
+            img.className = 'avatar';
+
+            entryDiv.innerHTML = htmlCode
+                .replace('{image}', img.outerHTML)
+                .replace('{displayName}', entry.displayName)
+                .replace('{amount}', entry.amount);
+            sectionDiv.appendChild(entryDiv);
         }
 
         creditsContainer.appendChild(sectionDiv);
