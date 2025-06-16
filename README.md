@@ -4,7 +4,7 @@
 
 This is a script that helps with an "end credits" display for [Firebot](https://firebot.app/) (the all-in-one bot for Twitch streamers).
 
-<video src="https://github.com/user-attachments/assets/7f4d60ba-ca95-4ba7-8250-7943be5f1e2a" controls></video>
+https://github.com/user-attachments/assets/8d1f81dd-fc10-41df-9eaf-f689dd18313a
 
 Features:
 - Tracks numerous events including:
