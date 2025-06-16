@@ -38,3 +38,5 @@ export interface CurrentStreamCredits {
     [CreditTypes.SUB]: CreditedUserEntry[];
     [CreditTypes.VIP]: CreditedUserEntry[];
 }
+
+export const existingCategories = ['existingAllSubs', 'existingFollowers', 'existingGiftedSubs', 'existingGifters', 'existingPaidSubs'];

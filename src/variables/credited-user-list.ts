@@ -2,25 +2,7 @@ import { ReplaceVariable } from '@crowbartools/firebot-custom-scripts-types/type
 import { currentStreamCredits, firebot, logger } from '../main';
 import { getFollowers } from '../twitch-api/followers';
 import { getAllSubscribers, getGiftedSubscribers, getGifters, getPaidSubscribers } from '../twitch-api/subscribers';
-import { CreditedUser, CreditedUserEntry, CreditTypes } from '../types';
-
-const categories: string[] = [
-    CreditTypes.CHEER as string,
-    CreditTypes.DONATION as string,
-    CreditTypes.EXTRALIFE as string,
-    'existingAllSubs',
-    'existingFollowers',
-    'existingGiftedSubs',
-    'existingGifters',
-    'existingGiftersByAmount',
-    'existingPaidSubs',
-    CreditTypes.FOLLOW as string,
-    CreditTypes.GIFT as string,
-    CreditTypes.MODERATOR as string,
-    CreditTypes.RAID as string,
-    CreditTypes.SUB as string,
-    CreditTypes.VIP as string
-];
+import { CreditedUser, CreditedUserEntry, CreditTypes, existingCategories } from '../types';
 
 export const creditedUserList: ReplaceVariable = {
     definition: {
@@ -55,10 +37,6 @@ export const creditedUserList: ReplaceVariable = {
             {
                 usage: 'creditedUserList[existingGifters]',
                 description: 'Generates a list of Firebot user names who have gifted subscriptions to the channel that are currently active, sorted by name.'
-            },
-            {
-                usage: 'creditedUserList[existingGiftersByAmount]',
-                description: 'Generates a list of Firebot user names who have gifted subscriptions to the channel that are currently active, sorted by amount.'
             },
             {
                 usage: 'creditedUserList[existingPaidSubs]',
@@ -116,48 +94,47 @@ export const creditedUserList: ReplaceVariable = {
 };
 
 async function getEntriesByCategory(category: string): Promise<CreditedUserEntry[] | undefined> {
-    switch (category) {
+    const switchCategory = category.trim().toLocaleLowerCase().endsWith('byamount') ? category.trim().slice(0, -'byamount'.length) : category.trim();
+    switch (switchCategory) {
         case CreditTypes.CHEER as string:
-            return collectAndSortByUsername(currentStreamCredits[CreditTypes.CHEER]);
+            return collectAndSort(currentStreamCredits[CreditTypes.CHEER], category);
         case CreditTypes.DONATION as string:
-            return collectAndSortByUsername(currentStreamCredits[CreditTypes.DONATION]);
+            return collectAndSort(currentStreamCredits[CreditTypes.DONATION], category);
         case CreditTypes.EXTRALIFE as string:
-            return collectAndSortByUsername(currentStreamCredits[CreditTypes.EXTRALIFE]);
+            return collectAndSort(currentStreamCredits[CreditTypes.EXTRALIFE], category);
         case CreditTypes.FOLLOW as string:
-            return collectAndSortByUsername(currentStreamCredits[CreditTypes.FOLLOW]);
+            return collectAndSort(currentStreamCredits[CreditTypes.FOLLOW], category);
         case CreditTypes.GIFT as string:
-            return collectAndSortByUsername(currentStreamCredits[CreditTypes.GIFT]);
+            return collectAndSort(currentStreamCredits[CreditTypes.GIFT], category);
         case CreditTypes.MODERATOR as string:
-            return removeStreamerAndBot(collectAndSortByUsername(currentStreamCredits[CreditTypes.MODERATOR]));
+            return removeStreamerAndBot(collectAndSort(currentStreamCredits[CreditTypes.MODERATOR], category));
         case CreditTypes.RAID as string:
-            return collectAndSortByUsername(currentStreamCredits[CreditTypes.RAID]);
+            return collectAndSort(currentStreamCredits[CreditTypes.RAID], category);
         case CreditTypes.SUB as string:
-            return collectAndSortByUsername(currentStreamCredits[CreditTypes.SUB]);
+            return collectAndSort(currentStreamCredits[CreditTypes.SUB], category);
         case CreditTypes.VIP as string:
-            return removeStreamerAndBot(collectAndSortByUsername(currentStreamCredits[CreditTypes.VIP]));
+            return removeStreamerAndBot(collectAndSort(currentStreamCredits[CreditTypes.VIP], category));
         case 'existingAllSubs':
-            return collectAndSortByUsername(await getAllSubscribers());
+            return collectAndSort(await getAllSubscribers(), category);
         case 'existingFollowers':
-            return collectAndSortByUsername(await getFollowers());
+            return collectAndSort(await getFollowers(), category);
         case 'existingGiftedSubs':
-            return collectAndSortByUsername(await getGiftedSubscribers());
+            return collectAndSort(await getGiftedSubscribers(), category);
         case 'existingGifters':
-            return collectAndSortByUsername(await getGifters());
-        case 'existingGiftersByAmount':
-            return collectAndSortByAmount(await getGifters());
+            return collectAndSort(await getGifters(), category);
         case 'existingPaidSubs':
-            return collectAndSortByUsername(await getPaidSubscribers());
+            return collectAndSort(await getPaidSubscribers(), category);
         default:
-            logger.error(`creditedUserList: Invalid category '${category}' provided. Valid categories are: ${categories.join(', ')}`);
+            logger.warn(`creditedUserList: Unknown category '${category}' provided.`);
             return [];
     }
-}
+};
 
 export const creditedUserListJSON: ReplaceVariable = {
     definition: {
         handle: 'creditedUserListJSON',
         usage: 'creditedUserListJSON',
-        description: `Generates a JSON string of credited users for the specified category (array). If a category is not provided, it will return an object containing all of the categories. Categories include: ${categories.join(', ')}.`,
+        description: 'Generates a JSON string of credited users for the specified category (array). If a category is not provided, it will return an object containing all of the categories.',
         possibleDataOutput: ["text"],
         examples: [
             {
@@ -177,39 +154,42 @@ export const creditedUserListJSON: ReplaceVariable = {
             return "";
         }
 
-        if (args.length === 1) {
-            const category = args[0];
-            if (!categories.includes(category)) {
-                logger.error(`creditedUserListJSON: Invalid category '${category}' provided. Valid categories are: ${categories.join(', ')}`);
-                return "";
-            }
-
-            const users = await getEntriesByCategory(category);
-            if (!users) {
-                logger.error(`creditedUserListJSON: No users found for category '${category}'.`);
-                return "";
-            }
-
-            const userObjects = await Promise.all(users.map((entry: CreditedUserEntry) => getUserObject(entry)));
-            const result = userObjects.filter((entry): entry is NonNullable<typeof entry> => entry !== undefined);
-            return JSON.stringify(result, null, 2);
-        }
-
         const results: Record<string, CreditedUserEntry[]> = {};
-        for (const category of categories) {
-            const users = await getEntriesByCategory(category);
-            if (!users) {
-                logger.error(`creditedUserListJSON: No users found for category '${category}'.`);
-                return "";
+        const allCategories = Object.keys(currentStreamCredits).concat(existingCategories);
+        for (const category of allCategories.sort()) {
+            if (args.length === 1) {
+                const switchCategory = args[0].trim().toLocaleLowerCase().endsWith('byamount') ? args[0].trim().slice(0, -'byamount'.length) : args[0].trim();
+                if (category.trim().toLocaleLowerCase() !== switchCategory.toLocaleLowerCase()) {
+                    continue;
+                }
             }
 
-            const userObjects = await Promise.all(users.map((entry: CreditedUserEntry) => getUserObject(entry)));
-            const result = userObjects.filter((entry): entry is NonNullable<typeof entry> => entry !== undefined);
-            results[category] = result;
+            for (const suffix of ['ByAmount', '']) {
+                const fullCategory = category + suffix;
+                const users = await getEntriesByCategory(fullCategory);
+                if (!users) {
+                    logger.debug(`creditedUserListJSON: No users found for category '${fullCategory}'.`);
+                    continue;
+                }
+
+                const userObjects = await Promise.all(users.map((entry: CreditedUserEntry) => getUserObject(entry)));
+                const result = userObjects.filter((entry): entry is NonNullable<typeof entry> => entry !== undefined);
+                results[fullCategory] = result;
+            }
         }
         return JSON.stringify(results, null, 2);
     }
 };
+
+function collectAndSort(entries: CreditedUserEntry[], category: string): CreditedUserEntry[] {
+    if (!entries || entries.length === 0) {
+        return [];
+    }
+    if (category.trim().toLocaleLowerCase().endsWith('byamount')) {
+        return collectAndSortByAmount(entries);
+    }
+    return collectAndSortByUsername(entries);
+}
 
 function collectAndSortByAmount(entries: CreditedUserEntry[]): CreditedUserEntry[] {
     const sortedEntries = collectEntries(entries).sort((a, b) => b.amount - a.amount || a.username.localeCompare(b.username, undefined, { sensitivity: 'base' }));
