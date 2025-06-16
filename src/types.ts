@@ -1,6 +1,7 @@
 export interface Parameters {
     enumerateExistingFollowers?: boolean;
     enumerateExistingSubscribers?: boolean;
+    enableCustomCredits?: boolean;
 }
 
 export enum CreditTypes {
@@ -37,6 +38,12 @@ export interface CurrentStreamCredits {
     [CreditTypes.RAID]: CreditedUserEntry[];
     [CreditTypes.SUB]: CreditedUserEntry[];
     [CreditTypes.VIP]: CreditedUserEntry[];
+    [key: string]: CreditedUserEntry[];
 }
 
 export const existingCategories = ['existingAllSubs', 'existingFollowers', 'existingGiftedSubs', 'existingGifters', 'existingPaidSubs'];
+
+export const ReservedCreditTypes: string[] = [
+    ...Object.values(CreditTypes),
+    ...existingCategories
+];

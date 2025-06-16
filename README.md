@@ -35,6 +35,7 @@ Feel free to stop by my Twitch stream (<https://www.twitch.tv/thestaticmage>) wh
   - [Configuration: Roll Credits in Firebot](/doc/installation.md#configuration-roll-credits-in-firebot)
   - [Configuration: Register Credits in Firebot](/doc/installation.md#configuration-register-credits-in-firebot)
   - [Configuration: Hide Credits in Firebot (Optional)](/doc/installation.md#configuration-hide-credits-in-firebot-optional)
+- [Custom credit types](/doc/custom-credits.md)
 
 ## Support
 

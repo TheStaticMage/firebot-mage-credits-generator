@@ -65,6 +65,10 @@ export const creditedUserList: ReplaceVariable = {
             {
                 usage: 'creditedUserList[vip]',
                 description: 'Generates a list of Firebot user names who are VIPs in the channel during this stream. Excludes streamer and bot.'
+            },
+            {
+                usage: 'creditedUserList[some_custom_credit_type]',
+                description: 'Generates a list of Firebot user names added for the specified custom credit type.'
             }
         ],
         possibleDataOutput: ["array"]
@@ -125,6 +129,10 @@ async function getEntriesByCategory(category: string): Promise<CreditedUserEntry
         case 'existingPaidSubs':
             return collectAndSort(await getPaidSubscribers(), category);
         default:
+            if (currentStreamCredits[switchCategory]) {
+                return collectAndSort(currentStreamCredits[switchCategory], category);
+            }
+
             logger.warn(`creditedUserList: Unknown category '${category}' provided.`);
             return [];
     }

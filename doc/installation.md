@@ -16,7 +16,7 @@
 
     :warning: If you are upgrading from a prior version, delete any references to the older versions.
 
-    :bulb: Read about the _Enumerate Existing Followers_ and _Enumerate Existing Subscribers_ settings and check these boxes appropriately. Generally, only very small channels without a lot of other activity will want to show all of their followers on the credits screen.
+    :bulb: For now, it is suggested to leave the additional settings at their defaults. You can always come back to change these later.
 
 4. Restart Firebot.
 
