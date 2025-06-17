@@ -29,6 +29,28 @@ window.onload = function() {
             htmlCode = section.html;
         }
 
+        let limit = entries.length;
+        if (section.hasOwnProperty('limit')) {
+            limit = section.limit;
+        }
+
+        let durationPerUser = config.durationPerUser;
+        if (section.hasOwnProperty('durationPerUser')) {
+            durationPerUser = section.durationPerUser;
+        }
+
+        let durationPerCategory = config.durationPerCategory;
+        if (section.hasOwnProperty('durationPerCategory')) {
+            durationPerCategory = section.durationPerCategory;
+        }
+
+        let imageClass = 'avatar';
+        if (section.hasOwnProperty('imageClass')) {
+            imageClass = section.imageClass;
+        }
+
+        totalDuration += durationPerCategory;
+
         if (hasPreviousSection) {
             const separatorDiv = document.createElement('div');
             separatorDiv.className = 'separator';
@@ -37,7 +59,6 @@ window.onload = function() {
         }
         hasPreviousSection = true;
 
-        totalDuration += entries.length * config.durationPerUser + config.durationPerCategory;
         const sectionDiv = document.createElement('div');
 
         const header = document.createElement('h2');
@@ -45,19 +66,42 @@ window.onload = function() {
         sectionDiv.appendChild(header);
 
         for (const entry of entries) {
+            limit--;
+            if (limit < 0) {
+                console.log(`Reached limit for section: ${section.header} (${section.key})`);
+                break;
+            }
+
+            totalDuration += durationPerUser;
+
             console.log(`Adding entry: ${entry.displayName} (${section.header})`);
             const entryDiv = document.createElement('div');
             entryDiv.className = 'entry';
 
+            if (section.hasOwnProperty('htmlFunction')) {
+                if (typeof section.htmlFunction !== 'function') {
+                    console.warn(`Section ${section.key} has htmlFunction but it is not a function:`, section.htmlFunction);
+                } else {
+                    const evaluatedHtmlCode = section.htmlFunction(entry);
+                    if (typeof evaluatedHtmlCode !== 'string') {
+                        console.warn(`Section ${section.key} htmlFunction did not return a string:`, evaluatedHtmlCode);
+                    } else {
+                        htmlCode = evaluatedHtmlCode;
+                    }
+                }
+            }
+
             const img = new Image();
             img.src = entry.profilePicUrl;
             img.alt = `${entry.username}'s avatar`;
-            img.className = 'avatar';
+            img.className = imageClass;
 
             entryDiv.innerHTML = htmlCode
                 .replace('{image}', img.outerHTML)
                 .replace('{displayName}', entry.displayName)
-                .replace('{amount}', entry.amount);
+                .replace('{amount}', entry.amount)
+                .replace('{profilePicUrl}', entry.profilePicUrl)
+                .replace('{username}', entry.username);
             sectionDiv.appendChild(entryDiv);
         }
 
