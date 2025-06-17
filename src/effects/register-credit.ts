@@ -127,8 +127,8 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                     return;
                 }
 
-                currentStreamCredits[CreditTypes.GIFT].push({username: username, amount: forceNumber(trigger.metadata?.eventData?.subCount || 0)});
-                logger.debug(`Registered subs gifted from ${eventSourceAndType} for user ${username} (${forceNumber(trigger.metadata?.eventData?.subCount || 0)}).`);
+                currentStreamCredits[CreditTypes.GIFT].push({username: username, amount: forceNumber(trigger.metadata?.eventData?.subCount || 1)});
+                logger.debug(`Registered subs gifted from ${eventSourceAndType} for user ${username} (${forceNumber(trigger.metadata?.eventData?.subCount || 1)}).`);
                 break;
             }
             case 'twitch:raid': {
