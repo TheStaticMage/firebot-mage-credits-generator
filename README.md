@@ -36,6 +36,7 @@ Feel free to stop by my Twitch stream (<https://www.twitch.tv/thestaticmage>) wh
   - [Configuration: Register Credits in Firebot](/doc/installation.md#configuration-register-credits-in-firebot)
   - [Configuration: Hide Credits in Firebot (Optional)](/doc/installation.md#configuration-hide-credits-in-firebot-optional)
 - [Custom credit types](/doc/custom-credits.md)
+- [Display customization](/doc/display-customization.md)
 
 ## Support
 
