@@ -1,5 +1,4 @@
 window.onload = function() {
-    const startTime = Date.now();
     const creditsContainer = document.getElementById('credits-container');
     creditsContainer.innerHTML = '';
     const creditsContainerParentHeight = creditsContainer.parentElement.offsetHeight;
@@ -112,10 +111,12 @@ window.onload = function() {
     creditsContainer.style.top = `${creditsContainerParentHeight + config.extraPanelPadding - (creditsContainerParentHeight + creditsContainerHeight + config.extraPanelPadding)}px`;
     creditsContainer.parentElement.style.display = 'block';
 
+    const startTime = performance.now();
+
     function animate() {
-        const elapsedTime = Date.now() - startTime;
+        const elapsedTime = performance.now() - startTime;
         const progress = Math.min(elapsedTime / totalDuration, 1);
-        creditsContainer.style.top = `${creditsContainerParentHeight + config.extraPanelPadding - (creditsContainerParentHeight + creditsContainerHeight + config.extraPanelPadding) * progress}px`;
+        creditsContainer.style.transform = `translateY(${(creditsContainerParentHeight + creditsContainerHeight + config.extraPanelPadding) * (1-progress)}px)`;
 
         if (progress < 1) {
             requestAnimationFrame(animate);
