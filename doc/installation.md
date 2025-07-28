@@ -8,6 +8,8 @@
 
         (File &gt; Open Data Folder, then select the "scripts" directory)
 
+    :warning: Be sure you download the file from the releases page, not the source code of the GitHub repository!
+
 2. Enable custom scripts in Firebot (Settings &gt; Scripts) if you have not already done so.
 
 3. Go to Settings &gt; Scripts &gt; Manage Startup Scripts &gt; Add New Script and add the `firebot-mage-credits-generator-<version>.js` script.
@@ -70,15 +72,9 @@ You'll need this URL for step 2 in the next section.
 
 Create a Preset Effect List (perhaps called "Roll Credits") containing the following effects:
 
-1. **Write To File**
+1. **Credit Generator: Write data file**
 
     - File: Choose the `credits-json.js` file that you installed with the browser files
-    - Write Mode: Replace
-    - Text: _Copy and paste the following exactly as it appears below_
-        ```text
-        // File maintained by Firebot -- DO NOT EDIT
-        const data = `$creditedUserListBase64encode[$creditedUserListJSON]`;
-        ```
 
 2. **Set OBS Browser Source URL**
 
