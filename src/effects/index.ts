@@ -2,11 +2,13 @@ import { RunRequest } from '@crowbartools/firebot-custom-scripts-types';
 import { registerCreditEffect } from './register-credit';
 import { registerCreditManualEffect } from './register-credit-manual';
 import { registerCustomCreditEffect } from './register-custom-credit';
+import { writeDataFileEffect } from './write-data-file';
 
 export function registerEffects(firebot: RunRequest<any>) {
     const { effectManager } = firebot.modules;
     effectManager.registerEffect(registerCreditEffect);
     effectManager.registerEffect(registerCreditManualEffect);
+    effectManager.registerEffect(writeDataFileEffect);
 
     if (firebot.parameters.enableCustomCredits) {
         // This is an advanced effect that allows users to register custom
