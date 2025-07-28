@@ -123,6 +123,10 @@ At this point you should have a working system, so let's test it.
 
 2. Simulate some events in Firebot, such as follows or subscriptions. (Events &gt; Simulate Event)
 
+    :warning: You need to enter the username of an actual user who is in your user database when you simulate events. If you leave the username as "Firebot" (a known bot), the credits will not be displayed because this bot is not in your user database.
+
+    :bulb: It is not necessary to look up the Twitch User ID when you simulate events. You may leave this blank.
+
 3. Roll the credits. (Preset Effect Lists &gt; _click the "play" button next to the "Roll credits" list you created_)
 
 :bulb: You can also watch the credits in an ordinary browser. Just copy the `file:///` URL from Firebot into the browser's address bar. This is a good way to troubleshoot if necessary.
