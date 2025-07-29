@@ -26,13 +26,13 @@ To enable this effect:
 
 - **Credit Type**: You can name this whatever you want (with just a few exceptions).
 
-    - The credit type you enter here will be used as the key in the JSON object that is parsed when you roll the credits. (This will not be directly shown to your users.)
+  - The credit type you enter here will be used as the key in the JSON object that is parsed when you roll the credits. (This will not be directly shown to your users.)
 
-    - If you have multiple calls to the **Register custom credit** effect that use the same credit type, these updates will be cumulative by user, and any amounts will be added. (This is useful if you have multiple events, preset effect lists, etc. that you want to update the same credit type.)
+  - If you have multiple calls to the **Register custom credit** effect that use the same credit type, these updates will be cumulative by user, and any amounts will be added. (This is useful if you have multiple events, preset effect lists, etc. that you want to update the same credit type.)
 
-    - You cannot name your credit type the same as any of the built-in credit types. (If you want to credit one of the built-in credit types, you can use **Credit Generator: Register event** or **Credit Generator: Register event manually**.)
+  - You cannot name your credit type the same as any of the built-in credit types. (If you want to credit one of the built-in credit types, you can use **Credit Generator: Register event** or **Credit Generator: Register event manually**.)
 
-    - You cannot end the name of your credit type with 'ByAmount' because this has special meaning elsewhere in the program.
+  - You cannot end the name of your credit type with 'ByAmount' because this has special meaning elsewhere in the program.
 
 - **Username**: The username of the user to credit. This is often `$username` (but not always).
 
@@ -49,7 +49,7 @@ In most cases, all that you will need to do is edit the `sectionsConfig` variabl
 
 The following entry might represent the credit type shown in the screenshot above:
 
-```
+```json
 {
     "header": "Super-Awesome Custom Viewers",
     "key": "custom_1"

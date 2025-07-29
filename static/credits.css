@@ -1,4 +1,11 @@
 /*
+    This file is intended to be modified by users to customize the appearance
+    of the credits display to fit their own stream's branding and style.
+    Copy this script to a directory of your choice, and then point the
+    **Credit Generator: Generate Credits** effect at it.
+*/
+
+/*
 Body settings apply to the entire page.
 */
 body {
@@ -21,13 +28,9 @@ h2 {
 }
 
 /*
-#credits-outer-container is the outer container for the credits section. The
-default settings here position this to the right side of the screen (if you're
-on a 1920x1080 display).
+#credits-outer-container is the outer container for the credits section.
 */
 #credits-outer-container {
-    margin-left: 1350px;
-    margin-top: 50px;
     overflow: hidden;
 }
 

@@ -3,9 +3,11 @@ import { registerCreditEffect } from './register-credit';
 import { registerCreditManualEffect } from './register-credit-manual';
 import { registerCustomCreditEffect } from './register-custom-credit';
 import { writeDataFileEffect } from './write-data-file';
+import { generateCreditsEffect } from './generate';
 
 export function registerEffects(firebot: RunRequest<any>) {
     const { effectManager } = firebot.modules;
+    effectManager.registerEffect(generateCreditsEffect);
     effectManager.registerEffect(registerCreditEffect);
     effectManager.registerEffect(registerCreditManualEffect);
     effectManager.registerEffect(writeDataFileEffect);

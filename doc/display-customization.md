@@ -19,23 +19,29 @@ How'd I do that? This document is intended to help you tweak the format of the c
 
 ## Relevant files
 
-There are two files that you can modify to customize the display (without digging deeply into the code). Both of these are in the [`browser-source-files`](/browser-source-files/) directory, which you hopefully copied to a place near your other OBS assets. Here is a list of what each file is responsible for:
+There are two files that you can modify to customize the display (without digging deeply into the code).
 
-- `credits-config.js` (copied from [`credits-config-template.js`](/browser-source-files/credits-config-template.js)) controls the operation:
+- [`credits-config.js`](/static/credits-config.js) is responsible for the operations:
+  - The sections included in your credits roll
+  - How fast the credits scroll
+  - The headers for each section
+  - How the entries in each section are sorted (alphabetically or by amount)
+  - The text and layout of each entry
+  - Limit on the number of entries in a section
 
-    - The sections included in your credits roll
-    - How fast the credits scroll
-    - The headers for each section
-    - How the entries in each section are sorted (alphabetically or by amount)
-    - The text and layout of each entry
-    - Limit on the number of entries in a section
+- [`credits.css`](/static/credits.css) controls the visuals:
+  - Width of the credit roll
+  - Colors on the credit roll
+  - Size of each displayed image
+  - Fonts used for each element
 
-- [`credits.css`](/browser-source-files/credits.css) controls the visuals:
+If you want to customize one or both of these files, you should do the following:
 
-    - Location of the credit roll relative to the overall window
-    - Colors on the credit roll
-    - Size of each displayed image
-    - Fonts used for each element
+1. Download the current version of the file (click the link above) to a directory on your computer where you can easily find it later. (Many people keep their OBS assets in a particular directory. That is a good place to put these files too.)
+
+2. Find the **Credit Generator: Generate Credits** effect that you added to the preset effect list during [installation](/doc/installation.md#configuration-roll-credits-in-firebot) and edit its settings. Select the `credits-config.js` and/or `credits.css` files that you downloaded.
+
+3. Customize the file(s) as desired. The next sections describe customization of each file.
 
 ## Customizing the operation (`credits-config.js`)
 
@@ -82,7 +88,7 @@ The following placeholders are available:
 
 Here is an example of sorting viewers who cheered with bits by amount (highest first) and displaying the total amount of bits each one used in the stream in parentheses after their name.
 
-```
+```javascript
 const sectionsConfig = [
     {
         "header": "Cheers and Bits",
@@ -98,7 +104,7 @@ For absolute control over the display of an entry, you can provide `htmlFunction
 
 The function must take as its input the entry from the credits generator script and output a string with HTML. For example:
 
-```
+```javascript
 function (entry) {
     return `<img src="..." /><p>...Some more information here...</p>`;
 }
@@ -115,7 +121,7 @@ The `entry` parameter corresponds to the output from the credit generator script
 
 Here is an example of a function that formats the user's donations as dollars and cents (e.g. `$4.20`):
 
-```
+```javascript
 const sectionsConfig = [
     {
         "header": "Donations and Tips",
@@ -136,10 +142,14 @@ const sectionsConfig = [
 
 ## Customizing the visuals (`credits.css`)
 
-You can modify the [`credits.css`](/browser-source-files/credits.css) file to change fonts, colors, alignments, sizes, and the like. There are extensive comments in the file to explain what each class is used for. The following annotated image serves to provide additional guidance:
+The `credits.css` file controls fonts, colors, alignments, sizes, and the like. There are extensive comments in the file to explain what each class is used for. The following annotated image serves to provide additional guidance:
 
 ![Credit Display - Labeled](/doc/img/credit-display-labeled.png)
 
 :bulb: It is assumed that the reader has sufficient knowledge of [CSS](https://www.w3schools.com/css/css_intro.asp) to make the desired adjustments.
 
-Note: If you want to change the layout of the entries, e.g. _not_ display images, display names above the images, etc., then you may need to modify the HTML code and not the CSS. Some of this can be achieved as documented above ([Customizing the operation](#customizing-the-operation-credits-configjs)). More advanced changes may require direct modification of [`credits.js`](/browser-source-files/credits.js) or [`credits.html`](/browser-source-files/credits.html).
+Note: If you want to change the layout of the entries, e.g. _not_ display images, display names above the images, etc., then you may need to modify the HTML code and not the CSS. Some of this can be achieved as documented above ([Customizing the operation](#customizing-the-operation-credits-configjs)).
+
+## Advanced customization
+
+You can also customize the [`credits.js` script](/static/credits.js) or the [`credits.html` file](/static/credits.html) in the same way as above -- download these files to some directory and point the **Credit Generator: Generate Credits** file at them. You should only attempt this if you really know what you're doing, and you're familiar with HTML and JavaScript. The script authors cannot offer much support if you have problems after modifying these files.

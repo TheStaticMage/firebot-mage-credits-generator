@@ -1,3 +1,7 @@
+// Do not modify this file unless you know what you are doing!
+// If you find yourself needing to modify this file, please consider
+// submitting a pull request to improve the code for everyone.
+
 window.onload = function() {
     const creditsContainer = document.getElementById('credits-container');
     creditsContainer.innerHTML = '';
@@ -121,16 +125,9 @@ window.onload = function() {
         if (progress < 1) {
             requestAnimationFrame(animate);
         } else {
-            if (config.endAnimationEffectListId) {
-                // Trigger the end animation effect list in Firebot
-                console.log(`Triggering end animation effect list: ${config.endAnimationEffectListId}`);
-                const endAnimationUrl = `${config.firebotBaseUrl}/${config.endAnimationEffectListId}`;
-                fetch(endAnimationUrl, {
-                    method: 'GET',
-                })
-            }
             console.log('Credits animation completed.');
             creditsContainer.parentElement.style.display = 'none'; // Hide after animation completes
+            fetch('complete' + window.location.search, { method: 'GET' })
         }
     }
 

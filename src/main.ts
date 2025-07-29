@@ -3,6 +3,8 @@ import { Logger } from '@crowbartools/firebot-custom-scripts-types/types/modules
 import { registerEffects } from "./effects";
 import { CreditedUserEntry, CreditTypes, CurrentStreamCredits, Parameters } from './types';
 import { registerReplacementVariables } from "./variables";
+import { Server } from './server/server';
+import { registerEvents } from './events';
 
 export const currentStreamCredits: CurrentStreamCredits = {
     [CreditTypes.CHEER]: new Array<CreditedUserEntry>(),
@@ -18,8 +20,9 @@ export const currentStreamCredits: CurrentStreamCredits = {
 
 export let firebot: RunRequest<any>;
 export let logger: Logger;
+export let server: Server | null = null;
 
-const scriptVersion = '0.0.4';
+const scriptVersion = '0.1.0';
 
 const script: Firebot.CustomScript<Parameters> = {
     getScriptManifest: () => {
@@ -59,7 +62,10 @@ const script: Firebot.CustomScript<Parameters> = {
     run: (runRequest) => {
         firebot = runRequest;
         logger = runRequest.modules.logger;
+        server = new Server();
+        server.start();
         registerEffects(runRequest);
+        registerEvents();
         registerReplacementVariables(runRequest);
     }
 };

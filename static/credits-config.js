@@ -1,6 +1,13 @@
-// This is the configuration file for the Firebot Credits Browser Source. You
-// should generally NOT overwrite this file when you upgrade the script because
-// you'll lose your custom settings.
+// This file is intended for users to modify to suit their own needs. To do
+// this, copy this file to a directory of your choice, and then point the
+// **Credit Generator: Generate Credits** effect at it.
+//
+// Note: This file is JavaScript, and it must correctly compile in order to
+// work. If you are not familiar with JavaScript, you may want to read some
+// tutorials on the language before attempting to modify this file. The code in
+// this file is intended to be easy to read and understand, but it is still
+// JavaScript...
+
 const config = {
     // Milliseconds per user displayed - for each user in the credits, add this
     // much time to the duration that the credits will be displayed. Larger
@@ -12,21 +19,6 @@ const config = {
     // the credits will be displayed. Larger numbers will make the credits
     // scroll slower.
     "durationPerCategory": 500,
-
-    // Firebot API base URL -- this is probably correct for most users. If you
-    // have changed the API settings for Firebot, you may need to change this.
-    // This is currently used only if you are having the browser source trigger
-    // an effect list when the credits are done running, so you can ignore this
-    // if you are not using that feature.
-    "firebotBaseUrl": "http://127.0.0.1:7472/api/v1/effects/preset",
-
-    // If you want the browser source to notify Firebot when the credits are
-    // done running (e.g. to hide the browser source), set this to the ID of a
-    // preset list. You can get this ID by finding the preset effect list in
-    // Firebot, clicking Edit, and expanding the "How to trigger from
-    // StreamDeck" section. Copy only the ID part, which is the long string that
-    // looks like this: ff46a0f4-7928-429c-b87f-6be394d562d8
-    "endAnimationEffectListId": "ff46a0f4-7928-429c-b87f-6be394d562d8",
 
     // Extra panel padding (in pixels) -- this controls how far the credits
     // container is initially pushed down from the bottom of the panel when the

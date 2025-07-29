@@ -5,7 +5,7 @@ const packageJson = require('./package.json');
 module.exports = {
     target: 'node',
     mode: 'production',
-    devtool: false,
+    devtool: 'inline-source-map',
     entry: {
         main: './src/main.ts',
     },
@@ -23,6 +23,10 @@ module.exports = {
             {
                 test: /\.ts$/,
                 loader: 'ts-loader',
+            },
+            {
+                test: /(^|[\\\/])static[\\\/].*/,
+                type: 'asset/source',
             },
         ],
     },
