@@ -7,6 +7,7 @@ This is a script that helps with an "end credits" display for [Firebot](https://
 https://github.com/user-attachments/assets/8d1f81dd-fc10-41df-9eaf-f689dd18313a
 
 Features:
+
 - Tracks numerous events including:
   - New followers
   - Subs and re-subs
@@ -30,20 +31,20 @@ Feel free to stop by my Twitch stream (<https://www.twitch.tv/thestaticmage>) wh
 
 - [Installation and Configuration](/doc/installation.md) (**Start Here**)
   - [Initial Installation](/doc/installation.md#initial-installation)
-  - [Configuration: Browser Files](/doc/installation.md#configuration-browser-files)
   - [Configuration: OBS](/doc/installation.md#configuration-obs)
   - [Configuration: Roll Credits in Firebot](/doc/installation.md#configuration-roll-credits-in-firebot)
   - [Configuration: Register Credits in Firebot](/doc/installation.md#configuration-register-credits-in-firebot)
   - [Configuration: Hide Credits in Firebot (Optional)](/doc/installation.md#configuration-hide-credits-in-firebot-optional)
+- [Upgrading](/doc/upgrading.md)
 - [Custom credit types](/doc/custom-credits.md)
 - [Display customization](/doc/display-customization.md)
 
 ## Support
 
-The best way to get help is in this project's thread on Discord. Join the [Crowbar Tools Discord](https://discord.gg/crowbartools-372817064034959370) and then visit the [thread for Mage Credits Generator]() there.
+The best way to get help is in my Discord server. Join the [The Static Discord](https://discord.gg/WdJaz8439X) and then visit the `#firebot-mage-credits-generator` channel there.
 
-  - Please do not DM me on Discord.
-  - Please do not ask for help in my chat when I am live on Twitch.
+- Please do not DM me on Discord.
+- Please do not ask for help in my chat when I am live on Twitch.
 
 Bug reports and feature requests are welcome via [GitHub Issues](https://github.com/TheStaticMage/firebot-mage-credits-generator/issues).
 

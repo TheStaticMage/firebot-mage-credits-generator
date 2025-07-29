@@ -1,7 +1,7 @@
 {
     "name": "mage-credits-generator",
     "scriptOutputName": "mage-credits-generator",
-    "version": "0.0.4",
+    "version": "0.1.0",
     "description": "Effects and variables to generate rolling credits on screen",
     "main": "",
     "scripts": {
