@@ -7,7 +7,6 @@ type registerCreditEffectParams = Record<string, never>;
 
 const triggers: Effects.TriggersObject = {};
 triggers["event"] = [
-    'twitch:bits-use',
     'twitch:cheer',
     // 'extralife:donation', TODO support in future
     'streamelements:donation',
@@ -22,7 +21,10 @@ triggers["event"] = [
     'twitch:raid',
     'twitch:sub',
     'twitch:gift-sub-upgraded',
-    'twitch:viewer-arrived'
+    'twitch:viewer-arrived',
+    "twitch:bits-powerup-message-effect",
+    "twitch:bits-powerup-celebration",
+    "twitch:bits-powerup-gigantified-emote"
 ];
 triggers["manual"] = true;
 
@@ -68,7 +70,6 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
 
 
         switch (eventSourceAndType) {
-            case 'twitch:bits-use':
             case 'twitch:cheer': {
                 const username = trigger.metadata?.username;
                 if (!username) {
@@ -77,6 +78,28 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                 }
                 currentStreamCredits[CreditTypes.CHEER].push({username: username, amount: forceNumber(trigger.metadata?.eventData?.bits)});
                 logger.debug(`Registered cheer from ${eventSourceAndType} for user ${username} (${forceNumber(trigger.metadata?.eventData?.bits)}).`);
+                break;
+            }
+            case 'twitch:bits-powerup-message-effect':
+            case 'twitch:bits-powerup-celebration':
+            case 'twitch:bits-powerup-gigantified-emote': {
+                const username = trigger.metadata?.username;
+                if (!username) {
+                    logger.error(`registerCreditEffect: No username provided for bits powerup event. metadata: ${JSON.stringify(trigger.metadata)}`);
+                    return;
+                }
+                const bits = trigger.metadata?.eventData?.bits;
+                if (bits == null || isNaN(Number(bits))) {
+                    logger.error(`registerCreditEffect: No bits provided in the event data for bits powerup event. metadata: ${JSON.stringify(trigger.metadata)}`);
+                    return;
+                }
+                if (Number(bits) <= 0) {
+                    logger.warn(`registerCreditEffect: Bits provided for bits powerup event is zero or negative. metadata: ${JSON.stringify(trigger.metadata)}`);
+                    return;
+                }
+
+                currentStreamCredits[CreditTypes.CHEER].push({username: username, amount: forceNumber(bits)});
+                logger.debug(`Registered bits powerup event from ${eventSourceAndType} for user ${username} (${forceNumber(bits)}).`);
                 break;
             }
             case 'streamelements:donation': {
