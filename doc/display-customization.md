@@ -47,15 +47,15 @@ If you want to customize one or both of these files, you should do the following
 
 The `credits-config.js` file defines two JavaScript constants:
 
-- `config` contains global configuration. The values provided here are reasonable defaults, but they can be tweaked by you. In practice, only `endAnimationEffectListId` is likely to need to be changed if you set up [Hide Credits in Firebot](/doc/installation.md#configuration-hide-credits-in-firebot-optional). There are extensive comments in the file as to what each setting does.
+- `config` contains global configuration. The values provided here are reasonable defaults, but they can be tweaked by you. In practice, these settings generally do not need to be changed. There are extensive comments in the file as to what each setting does.
 
-- `sectionsConfig` is intended to be customized by you. The [default setup](/browser-source-files/credits-config-template.js) displays several Twitch-related sections and sorts the users in alphabetical order. This will look very much like the "Default Display" at the top of this page. This is the section you will modify to make this your own.
+- `sectionsConfig` is intended to be customized by you. The [default setup](/static/credits-config.js) contains several Twitch-related sections and sorts the users in alphabetical order. This will look very much like the "Default Display" at the top of this page. This is the section you will modify to make this your own.
 
 The `sectionsConfig` is an Array of the following objects:
 
 | Field | Data Type | Required? | Description |
 | --- | --- | --- | --- |
-| `key` | String | REQUIRED | Must match with the key name from the credit registration. This will either be one of the built-in keys ('cheer', 'donation', 'extralife', 'existingAllSubs', 'existingFollowers', 'existingGiftedSubs', 'existingGifters', 'existingPaidSubs', 'follow', 'gift', 'moderator', 'raid', 'sub', 'vip') or a [custom credit type](/doc/custom-credits.md). You may append `ByAmount` to any key name to sort by amount. |
+| `key` | String | REQUIRED | Must match with the key name from the credit registration. This will either be one of the built-in keys ('cheer', 'donation', 'extralife', 'existingAllSubs', 'existingFollowers', 'existingGiftedSubs', 'existingGifters', 'existingPaidSubs', 'follow', 'gift', 'moderator', 'raid', 'sub', 'vip') or a [custom credit type](/doc/custom-credits.md). You may append `ByAmount` to any key name to sort by amount (e.g. `giftByAmount`). |
 | `header` | String | REQUIRED | The header as it displays on the credits roll. |
 | `durationPerCategory` | Integer | Optional | Override the value of `durationPerCategory` for this section only. This amount will be added to the total duration if any entries are displayed for this section. |
 | `durationPerUser` | Integer | Optional | Override the value of `durationPerUser` as it pertains to counting entries for this section only. (For example, if you are not including images, you don't need as long of a duration since there is less vertical space needed to display only a name.) |
