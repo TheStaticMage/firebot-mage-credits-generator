@@ -182,6 +182,19 @@ export const creditedUserListJSON: ReplaceVariable = {
 
                 const userObjects = await Promise.all(users.map((entry: CreditedUserEntry) => getUserObject(entry)));
                 const result = userObjects.filter((entry): entry is NonNullable<typeof entry> => entry !== undefined);
+
+                // Twitch seems to have an inferiority complex or insecurity
+                // about their competitor Kick, but I won't want anyone to get
+                // banned on my account for showing the Kick logo on a Twitch
+                // stream. But this workaround is Kick's fault anyway, since
+                // their profile picture URLs are broken
+                // (https://github.com/KickEngineering/KickDevDocs/issues/166)
+                // so we will replace it with a Twitch default profile picture.
+                for (const entry of result) {
+                    if (entry.profilePicUrl === "https://kick.com/favicon.ico") {
+                        entry.profilePicUrl = "https://static-cdn.jtvnw.net/user-default-pictures-uv/ead5c8b2-a4c9-4724-b1dd-9f00b46cbd3d-profile_image-300x300.png";
+                    }
+                }
                 results[fullCategory] = result;
             }
         }
