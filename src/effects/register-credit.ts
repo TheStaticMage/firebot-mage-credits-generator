@@ -13,6 +13,7 @@ triggers["event"] = [
     // 'streamlabs:donation', TODO support in future
     // 'streamlabs:eldonation', TODO support in future
     // 'TipeeeStream:donation', TODO support in future
+    'mage-kick-integration:follow',
     'twitch:follow',
     // 'streamelements:follow', TODO support in future
     // 'streamlabs:follow', TODO support in future
@@ -126,6 +127,7 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                 logger.debug(`Registered donation/tip from ${eventSourceAndType} for user ${user.username} (${forceNumber(donationAmount)}).`);
                 break;
             }
+            case 'mage-kick-integration:follow':
             case 'twitch:follow': {
                 const username = trigger.metadata?.username;
                 if (!username) {

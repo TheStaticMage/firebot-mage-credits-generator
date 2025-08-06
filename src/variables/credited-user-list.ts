@@ -191,7 +191,7 @@ export const creditedUserListJSON: ReplaceVariable = {
                 // (https://github.com/KickEngineering/KickDevDocs/issues/166)
                 // so we will replace it with a Twitch default profile picture.
                 for (const entry of result) {
-                    if (entry.profilePicUrl === "https://kick.com/favicon.ico") {
+                    if (entry.profilePicUrl === "https://kick.com/favicon.ico" || entry.profilePicUrl === "") {
                         entry.profilePicUrl = "https://static-cdn.jtvnw.net/user-default-pictures-uv/ead5c8b2-a4c9-4724-b1dd-9f00b46cbd3d-profile_image-300x300.png";
                     }
                 }
@@ -240,8 +240,8 @@ function removeStreamerAndBot(input: CreditedUserEntry[]): CreditedUserEntry[] {
 }
 
 async function getUserObject(entry: CreditedUserEntry): Promise<CreditedUser | undefined> {
-    const { userDb } = firebot.modules;
-    const user = await userDb.getTwitchUserByUsername(entry.username);
+    const { viewerDatabase } = firebot.modules;
+    const user = await viewerDatabase.getViewerByUsername(entry.username);
     if (!user) {
         logger.warn(`creditedUserList: User not found in database: ${entry.username}`);
         return undefined;
