@@ -19,26 +19,21 @@ export enum CreditTypes {
 export interface CreditedUser {
     username: string;
     amount: number;
-    displayName: string;
-    profilePicUrl: string;
-}
-
-export interface CreditedUserEntry {
-    username: string;
-    amount: number;
+    userDisplayName?: string;
+    profilePicUrl?: string;
 }
 
 export interface CurrentStreamCredits {
-    [CreditTypes.CHEER]: CreditedUserEntry[];
-    [CreditTypes.DONATION]: CreditedUserEntry[];
-    [CreditTypes.EXTRALIFE]: CreditedUserEntry[];
-    [CreditTypes.FOLLOW]: CreditedUserEntry[];
-    [CreditTypes.GIFT]: CreditedUserEntry[];
-    [CreditTypes.MODERATOR]: CreditedUserEntry[];
-    [CreditTypes.RAID]: CreditedUserEntry[];
-    [CreditTypes.SUB]: CreditedUserEntry[];
-    [CreditTypes.VIP]: CreditedUserEntry[];
-    [key: string]: CreditedUserEntry[];
+    [CreditTypes.CHEER]: CreditedUser[];
+    [CreditTypes.DONATION]: CreditedUser[];
+    [CreditTypes.EXTRALIFE]: CreditedUser[];
+    [CreditTypes.FOLLOW]: CreditedUser[];
+    [CreditTypes.GIFT]: CreditedUser[];
+    [CreditTypes.MODERATOR]: CreditedUser[];
+    [CreditTypes.RAID]: CreditedUser[];
+    [CreditTypes.SUB]: CreditedUser[];
+    [CreditTypes.VIP]: CreditedUser[];
+    [key: string]: CreditedUser[];
 }
 
 export const existingCategories = ['existingAllSubs', 'existingFollowers', 'existingGiftedSubs', 'existingGifters', 'existingPaidSubs'];

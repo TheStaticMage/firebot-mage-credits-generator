@@ -1,21 +1,21 @@
 import { Firebot, RunRequest } from '@crowbartools/firebot-custom-scripts-types';
 import { Logger } from '@crowbartools/firebot-custom-scripts-types/types/modules/logger';
 import { registerEffects } from "./effects";
-import { CreditedUserEntry, CreditTypes, CurrentStreamCredits, Parameters } from './types';
+import { CreditedUser, CreditTypes, CurrentStreamCredits, Parameters } from './types';
 import { registerReplacementVariables } from "./variables";
 import { Server } from './server/server';
 import { registerEvents } from './events';
 
 export const currentStreamCredits: CurrentStreamCredits = {
-    [CreditTypes.CHEER]: new Array<CreditedUserEntry>(),
-    [CreditTypes.DONATION]: new Array<CreditedUserEntry>(),
-    [CreditTypes.EXTRALIFE]: new Array<CreditedUserEntry>(),
-    [CreditTypes.FOLLOW]: new Array<CreditedUserEntry>(),
-    [CreditTypes.GIFT]: new Array<CreditedUserEntry>(),
-    [CreditTypes.MODERATOR]: new Array<CreditedUserEntry>(),
-    [CreditTypes.RAID]: new Array<CreditedUserEntry>(),
-    [CreditTypes.SUB]: new Array<CreditedUserEntry>(),
-    [CreditTypes.VIP]: new Array<CreditedUserEntry>()
+    [CreditTypes.CHEER]: new Array<CreditedUser>(),
+    [CreditTypes.DONATION]: new Array<CreditedUser>(),
+    [CreditTypes.EXTRALIFE]: new Array<CreditedUser>(),
+    [CreditTypes.FOLLOW]: new Array<CreditedUser>(),
+    [CreditTypes.GIFT]: new Array<CreditedUser>(),
+    [CreditTypes.MODERATOR]: new Array<CreditedUser>(),
+    [CreditTypes.RAID]: new Array<CreditedUser>(),
+    [CreditTypes.SUB]: new Array<CreditedUser>(),
+    [CreditTypes.VIP]: new Array<CreditedUser>()
 };
 
 export let firebot: RunRequest<any>;

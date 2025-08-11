@@ -1,12 +1,12 @@
 import { HelixChannelFollower } from '@twurple/api';
 import * as NodeCache from 'node-cache';
 import { firebot, logger } from "../main";
-import { CreditedUserEntry } from '../types';
+import { CreditedUser } from '../types';
 
 const cache = new NodeCache({checkperiod: 3, stdTTL: 30});
 const cacheKey = "twitchFollowers";
 
-export async function getFollowers(): Promise<CreditedUserEntry[]> {
+export async function getFollowers(): Promise<CreditedUser[]> {
     if (!firebot.parameters.enumerateExistingFollowers) {
         logger.debug('getFollowers: Enumeration of existing followers is disabled, returning empty list');
         return [];
@@ -15,11 +15,11 @@ export async function getFollowers(): Promise<CreditedUserEntry[]> {
     return await getFollowerListFromTwitch();
 }
 
-async function getFollowerListFromTwitch(): Promise<CreditedUserEntry[]> {
+async function getFollowerListFromTwitch(): Promise<CreditedUser[]> {
     const cachedValue = cache.get(cacheKey);
     if (cachedValue) {
         logger.debug(`getFollowerListFromTwitch: Found cached value for ${cacheKey}`);
-        return cachedValue as CreditedUserEntry[];
+        return cachedValue as CreditedUser[];
     }
 
     logger.debug(`getFollowerListFromTwitch: No cached value for ${cacheKey}, fetching from Twitch API`);
@@ -47,7 +47,7 @@ async function getFollowerListFromTwitch(): Promise<CreditedUserEntry[]> {
     }
     logger.debug(`getFollowerListFromTwitch: Found ${followerUsernames.size} followers.`);
 
-    const result: CreditedUserEntry[] = [];
+    const result: CreditedUser[] = [];
     for (const username of followerUsernames) {
         result.push({ username, amount: 0 });
     }

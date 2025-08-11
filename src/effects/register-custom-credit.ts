@@ -1,10 +1,12 @@
 import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
 import { currentStreamCredits, logger } from '../main';
-import { CreditedUserEntry, ReservedCreditTypes } from '../types';
+import { CreditedUser, ReservedCreditTypes } from '../types';
 
 type registerCustomCreditEffectParams = {
     creditType: string;
     username: string;
+    userDisplayName?: string;
+    profilePicUrl?: string;
     amount: string;
 };
 
@@ -25,6 +27,14 @@ export const registerCustomCreditEffect: Firebot.EffectType<registerCustomCredit
 
             <eos-container header="Username" style="margin-top: 10px;" pad-top="true">
                 <firebot-input model="effect.username" placeholder-text="Enter username" />
+            </eos-container>
+
+            <eos-container header="User Display Name" style="margin-top: 10px;" pad-top="true">
+                <firebot-input model="effect.userDisplayName" placeholder-text="Enter user display name" />
+            </eos-container>
+
+            <eos-container header="User Profile Picture URL" style="margin-top: 10px;" pad-top="true">
+                <firebot-input model="effect.profilePicUrl" placeholder-text="Enter user profile picture URL" />
             </eos-container>
 
             <eos-container header="Amount" style="margin-top: 10px;" pad-top="true">
@@ -101,13 +111,15 @@ export const registerCustomCreditEffect: Firebot.EffectType<registerCustomCredit
 
         const amount = effect.amount && !isNaN(Number(effect.amount.trim())) ? Number(effect.amount.trim()) : 0;
 
-        const entry: CreditedUserEntry = {
+        const entry: CreditedUser = {
             username: effect.username.trim(),
-            amount: amount
+            amount: amount,
+            userDisplayName: effect.userDisplayName?.trim() || effect.username.trim(),
+            profilePicUrl: effect.profilePicUrl?.trim() || ""
         };
 
         currentStreamCredits[creditType] = currentStreamCredits[creditType] || [];
         currentStreamCredits[creditType].push(entry);
-        logger.debug(`Registered custom credit for user ${effect.username} with type "${creditType}" and amount ${amount}`);
+        logger.debug(`Registered custom credit "${creditType}" for user: ${JSON.stringify(entry)}`);
     }
 };
