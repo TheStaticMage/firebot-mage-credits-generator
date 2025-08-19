@@ -77,7 +77,7 @@ window.onload = function() {
 
             totalDuration += durationPerUser;
 
-            console.log(`Adding entry: ${entry.displayName} (${section.header})`);
+            console.log(`Adding entry: ${entry.userDisplayName} (${section.header})`);
             const entryDiv = document.createElement('div');
             entryDiv.className = 'entry';
 
@@ -101,7 +101,7 @@ window.onload = function() {
 
             entryDiv.innerHTML = htmlCode
                 .replace('{image}', img.outerHTML)
-                .replace('{displayName}', entry.displayName)
+                .replace('{displayName}', entry.userDisplayName)
                 .replace('{amount}', entry.amount)
                 .replace('{profilePicUrl}', entry.profilePicUrl)
                 .replace('{username}', entry.username);

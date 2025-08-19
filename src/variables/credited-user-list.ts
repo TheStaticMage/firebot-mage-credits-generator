@@ -2,7 +2,9 @@ import { ReplaceVariable } from '@crowbartools/firebot-custom-scripts-types/type
 import { currentStreamCredits, firebot, logger } from '../main';
 import { getFollowers } from '../twitch-api/followers';
 import { getAllSubscribers, getGiftedSubscribers, getGifters, getPaidSubscribers } from '../twitch-api/subscribers';
-import { CreditedUser, CreditedUserEntry, CreditTypes, existingCategories } from '../types';
+import { CreditedUser, CreditTypes, existingCategories } from '../types';
+
+const viewerDbCache: Record<string, CreditedUser> = {};
 
 export const creditedUserList: ReplaceVariable = {
     definition: {
@@ -97,7 +99,7 @@ export const creditedUserList: ReplaceVariable = {
     }
 };
 
-async function getEntriesByCategory(category: string): Promise<CreditedUserEntry[] | undefined> {
+async function getEntriesByCategory(category: string): Promise<CreditedUser[] | undefined> {
     const switchCategory = category.trim().toLocaleLowerCase().endsWith('byamount') ? category.trim().slice(0, -'byamount'.length) : category.trim();
     switch (switchCategory) {
         case CreditTypes.CHEER as string:
@@ -162,7 +164,7 @@ export const creditedUserListJSON: ReplaceVariable = {
             return "";
         }
 
-        const results: Record<string, CreditedUserEntry[]> = {};
+        const results: Record<string, CreditedUser[]> = {};
         const allCategories = Object.keys(currentStreamCredits).concat(existingCategories);
         for (const category of allCategories.sort()) {
             if (args.length === 1) {
@@ -180,7 +182,7 @@ export const creditedUserListJSON: ReplaceVariable = {
                     continue;
                 }
 
-                const userObjects = await Promise.all(users.map((entry: CreditedUserEntry) => getUserObject(entry)));
+                const userObjects = await Promise.all(users.map((entry: CreditedUser) => getUserObject(entry)));
                 const result = userObjects.filter((entry): entry is NonNullable<typeof entry> => entry !== undefined);
 
                 // Twitch seems to have an inferiority complex or insecurity
@@ -191,7 +193,13 @@ export const creditedUserListJSON: ReplaceVariable = {
                 // (https://github.com/KickEngineering/KickDevDocs/issues/166)
                 // so we will replace it with a Twitch default profile picture.
                 for (const entry of result) {
-                    if (entry.profilePicUrl === "https://kick.com/favicon.ico") {
+                    if (/@/.test(entry.username)) {
+                        entry.username = entry.username.replace(/@.*$/g, '');
+                    }
+                    if (/@/.test(entry.userDisplayName || '')) {
+                        entry.userDisplayName = (entry.userDisplayName || '').replace(/@.*$/g, '');
+                    }
+                    if (entry.profilePicUrl === "https://kick.com/favicon.ico" || entry.profilePicUrl === "") {
                         entry.profilePicUrl = "https://static-cdn.jtvnw.net/user-default-pictures-uv/ead5c8b2-a4c9-4724-b1dd-9f00b46cbd3d-profile_image-300x300.png";
                     }
                 }
@@ -202,7 +210,7 @@ export const creditedUserListJSON: ReplaceVariable = {
     }
 };
 
-function collectAndSort(entries: CreditedUserEntry[], category: string): CreditedUserEntry[] {
+function collectAndSort(entries: CreditedUser[], category: string): CreditedUser[] {
     if (!entries || entries.length === 0) {
         return [];
     }
@@ -212,17 +220,17 @@ function collectAndSort(entries: CreditedUserEntry[], category: string): Credite
     return collectAndSortByUsername(entries);
 }
 
-function collectAndSortByAmount(entries: CreditedUserEntry[]): CreditedUserEntry[] {
+function collectAndSortByAmount(entries: CreditedUser[]): CreditedUser[] {
     const sortedEntries = collectEntries(entries).sort((a, b) => b.amount - a.amount || a.username.localeCompare(b.username, undefined, { sensitivity: 'base' }));
     return sortedEntries.map(entry => ({ username: entry.username, amount: entry.amount }));
 }
 
-function collectAndSortByUsername(entries: CreditedUserEntry[]): CreditedUserEntry[] {
+function collectAndSortByUsername(entries: CreditedUser[]): CreditedUser[] {
     const sortedEntries = collectEntries(entries).sort((a, b) => a.username.localeCompare(b.username, undefined, { sensitivity: 'base' }));
     return sortedEntries.map(entry => ({ username: entry.username, amount: entry.amount }));
 }
 
-function collectEntries(entries: CreditedUserEntry[]): CreditedUserEntry[] {
+function collectEntries(entries: CreditedUser[]): CreditedUser[] {
     if (!entries || entries.length === 0) {
         return [];
     }
@@ -233,23 +241,49 @@ function collectEntries(entries: CreditedUserEntry[]): CreditedUserEntry[] {
     return Object.entries(entryMap).map(([username, amount]) => ({ username, amount }));
 }
 
-function removeStreamerAndBot(input: CreditedUserEntry[]): CreditedUserEntry[] {
+function removeStreamerAndBot(input: CreditedUser[]): CreditedUser[] {
     const streamer = firebot.firebot.accounts.streamer.username;
     const bot = firebot.firebot.accounts.bot.username;
     return input.filter(user => user.username !== streamer && user.username !== bot);
 }
 
-async function getUserObject(entry: CreditedUserEntry): Promise<CreditedUser | undefined> {
-    const { userDb } = firebot.modules;
-    const user = await userDb.getTwitchUserByUsername(entry.username);
-    if (!user) {
-        logger.warn(`creditedUserList: User not found in database: ${entry.username}`);
+async function getUserObject(entry: CreditedUser): Promise<CreditedUser | undefined> {
+    if (!entry || !entry.username || entry.username.trim() === "") {
+        logger.warn(`getUserObject: No username provided for entry: ${JSON.stringify(entry)}`);
         return undefined;
     }
+
+    const cacheEntry = viewerDbCache[entry.username] ?? {username: entry.username, userDisplayName: entry.userDisplayName || entry.username, profilePicUrl: entry.profilePicUrl || "", amount: 0};
+
+    if (entry.username.trim() !== "") {
+        cacheEntry.username = entry.username.trim();
+    }
+
+    if (entry.userDisplayName && entry.userDisplayName.trim() !== "") {
+        cacheEntry.userDisplayName = entry.userDisplayName.trim();
+    }
+
+    if (entry.profilePicUrl && entry.profilePicUrl.trim() !== "") {
+        cacheEntry.profilePicUrl = entry.profilePicUrl.trim();
+    }
+
+    viewerDbCache[entry.username] = cacheEntry;
+
+    const { viewerDatabase } = firebot.modules;
+    const user = await viewerDatabase.getViewerByUsername(entry.username);
+    if (user) {
+        return {
+            username: user.username,
+            userDisplayName: user.displayName,
+            profilePicUrl: user.profilePicUrl,
+            amount: entry.amount || 0
+        };
+    }
+
     return {
-        username: user.username,
-        displayName: user.displayName,
-        profilePicUrl: user.profilePicUrl,
+        username: entry.username || viewerDbCache[entry.username]?.username || "",
+        userDisplayName: entry.userDisplayName || viewerDbCache[entry.username]?.userDisplayName || entry.username || "",
+        profilePicUrl: entry.profilePicUrl || viewerDbCache[entry.username]?.profilePicUrl || "",
         amount: entry.amount || 0
     };
 }

@@ -1,7 +1,7 @@
 {
     "name": "mage-credits-generator",
     "scriptOutputName": "mage-credits-generator",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "description": "Effects and variables to generate rolling credits on screen",
     "main": "",
     "scripts": {
@@ -15,7 +15,7 @@
     "author": "thestaticmage",
     "license": "GNU3",
     "devDependencies": {
-        "@crowbartools/firebot-custom-scripts-types": "^5.63.2",
+        "@crowbartools/firebot-custom-scripts-types": "TheStaticMage/firebot-custom-scripts-types#running",
         "@eslint/js": "^9.28.0",
         "@stylistic/eslint-plugin": "^4.4.1",
         "terser-webpack-plugin": "^5.3.10",

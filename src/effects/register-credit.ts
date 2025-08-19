@@ -13,6 +13,7 @@ triggers["event"] = [
     // 'streamlabs:donation', TODO support in future
     // 'streamlabs:eldonation', TODO support in future
     // 'TipeeeStream:donation', TODO support in future
+    'mage-kick-integration:follow',
     'twitch:follow',
     // 'streamelements:follow', TODO support in future
     // 'streamlabs:follow', TODO support in future
@@ -126,14 +127,18 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                 logger.debug(`Registered donation/tip from ${eventSourceAndType} for user ${user.username} (${forceNumber(donationAmount)}).`);
                 break;
             }
+            case 'mage-kick-integration:follow':
             case 'twitch:follow': {
-                const username = trigger.metadata?.username;
-                if (!username) {
-                    logger.error(`registerCreditEffect: No username provided for trigger. metadata: ${JSON.stringify(trigger.metadata)}`);
+                const userName = (trigger.metadata.username) || (trigger.metadata.eventData?.username);
+                const userDisplayName = (trigger.metadata.eventData?.userDisplayName) || userName;
+                const profilePicUrl = (trigger.metadata.eventData?.profilePicUrl) || "";
+                if (!userName) {
+                    logger.error(`registerCreditEffect: No username provided for follow event. metadata: ${JSON.stringify(trigger.metadata)}`);
                     return;
                 }
-                currentStreamCredits[CreditTypes.FOLLOW].push({username: username, amount: 0});
-                logger.debug(`Registered follow from ${eventSourceAndType} for user ${username}.`);
+
+                currentStreamCredits[CreditTypes.FOLLOW].push({username: userName as string, userDisplayName: userDisplayName as string, profilePicUrl: profilePicUrl as string, amount: 0});
+                logger.debug(`Registered follow from ${eventSourceAndType} for user ${userName as string}.`);
                 break;
             }
             case 'twitch:community-subs-gifted':

@@ -1,7 +1,7 @@
 import { HelixSubscription } from '@twurple/api';
 import * as NodeCache from 'node-cache';
 import { firebot, logger } from "../main";
-import { CreditedUserEntry } from '../types';
+import { CreditedUser } from '../types';
 
 const cache = new NodeCache({checkperiod: 3, stdTTL: 30});
 const cacheTwitchSubscriberKey = "twitchSubscribers";
@@ -13,56 +13,56 @@ interface cacheValue {
     paidSubscribers: string[];
 }
 
-export async function getGifters(): Promise<CreditedUserEntry[]> {
+export async function getGifters(): Promise<CreditedUser[]> {
     const subscriberLists = await getSubscriberListsFromTwitch();
     if (!subscriberLists) {
         logger.warn('getGifters: No subscriber lists found');
         return [];
     }
 
-    const result: CreditedUserEntry[] = [];
+    const result: CreditedUser[] = [];
     for (const [username, amount] of Object.entries(subscriberLists.gifters)) {
         result.push({ username: username, amount: amount });
     }
     return result;
 }
 
-export async function getAllSubscribers(): Promise<CreditedUserEntry[]> {
+export async function getAllSubscribers(): Promise<CreditedUser[]> {
     const subscriberLists = await getSubscriberListsFromTwitch();
     if (!subscriberLists) {
         logger.warn('getAllSubscribers: No subscriber lists found');
         return [];
     }
 
-    const result: CreditedUserEntry[] = [];
+    const result: CreditedUser[] = [];
     for (const username of subscriberLists.allSubscribers) {
         result.push({ username: username, amount: 1 });
     }
     return result;
 }
 
-export async function getGiftedSubscribers(): Promise<CreditedUserEntry[]> {
+export async function getGiftedSubscribers(): Promise<CreditedUser[]> {
     const subscriberLists = await getSubscriberListsFromTwitch();
     if (!subscriberLists) {
         logger.warn('getGiftedSubscribers: No subscriber lists found');
         return [];
     }
 
-    const result: CreditedUserEntry[] = [];
+    const result: CreditedUser[] = [];
     for (const username of subscriberLists.giftedSubscribers) {
         result.push({ username: username, amount: 1 });
     }
     return result;
 }
 
-export async function getPaidSubscribers(): Promise<CreditedUserEntry[]> {
+export async function getPaidSubscribers(): Promise<CreditedUser[]> {
     const subscriberLists = await getSubscriberListsFromTwitch();
     if (!subscriberLists) {
         logger.warn('getPaidSubscribers: No subscriber lists found');
         return [];
     }
 
-    const result: CreditedUserEntry[] = [];
+    const result: CreditedUser[] = [];
     for (const username of subscriberLists.paidSubscribers) {
         result.push({ username: username, amount: 1 });
     }
