@@ -19,6 +19,7 @@ triggers["event"] = [
     // 'streamlabs:follow', TODO support in future
     'twitch:community-subs-gifted',
     'twitch:subs-gifted',
+    'mage-kick-integration:raid', // Kick hosts
     'twitch:raid',
     'twitch:sub',
     'twitch:gift-sub-upgraded',
@@ -159,6 +160,7 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                 logger.debug(`Registered subs gifted from ${eventSourceAndType} for user ${username} (${forceNumber(trigger.metadata?.eventData?.subCount || 1)}).`);
                 break;
             }
+            case 'mage-kick-integration:raid':
             case 'twitch:raid': {
                 const username = trigger.metadata?.username;
                 if (!username) {
