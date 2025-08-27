@@ -17,10 +17,13 @@ triggers["event"] = [
     'twitch:follow',
     // 'streamelements:follow', TODO support in future
     // 'streamlabs:follow', TODO support in future
+    'mage-kick-integration:community-subs-gifted',
     'twitch:community-subs-gifted',
+    'mage-kick-integration:subs-gifted',
     'twitch:subs-gifted',
     'mage-kick-integration:raid', // Kick hosts
     'twitch:raid',
+    'mage-kick-integration:sub',
     'twitch:sub',
     'twitch:gift-sub-upgraded',
     'twitch:viewer-arrived',
@@ -142,6 +145,8 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                 logger.debug(`Registered follow from ${eventSourceAndType} for user ${userName as string}.`);
                 break;
             }
+            case 'mage-kick-integration:community-subs-gifted':
+            case 'mage-kick-integration:subs-gifted':
             case 'twitch:community-subs-gifted':
             case 'twitch:subs-gifted': {
                 const isAnonymous = trigger.metadata?.eventData?.isAnonymous as boolean;
@@ -172,6 +177,7 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                 logger.debug(`Registered raid from ${eventSourceAndType} for user ${username} (${forceNumber(trigger.metadata?.eventData?.viewerCount)}).`);
                 break;
             }
+            case 'mage-kick-integration:sub':
             case 'twitch:sub':
             case 'twitch:gift-sub-upgraded': {
                 const username = trigger.metadata?.username;
