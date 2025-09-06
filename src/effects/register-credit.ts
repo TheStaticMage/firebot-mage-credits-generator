@@ -1,6 +1,7 @@
 import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
 import { Effects } from '@crowbartools/firebot-custom-scripts-types/types/effects';
-import { currentStreamCredits, firebot, logger } from '../main';
+import { currentStreamCredits } from '../credits-store';
+import { firebot, logger } from '../main';
 import { CreditTypes } from '../types';
 
 type registerCreditEffectParams = Record<string, never>;
@@ -81,7 +82,12 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                     logger.error(`registerCreditEffect: No username provided for trigger. metadata: ${JSON.stringify(trigger.metadata)}`);
                     return;
                 }
-                currentStreamCredits[CreditTypes.CHEER].push({username: username, amount: forceNumber(trigger.metadata?.eventData?.bits)});
+                currentStreamCredits.registerCredit(CreditTypes.CHEER, {
+                    username: username,
+                    amount: forceNumber(trigger.metadata?.eventData?.bits),
+                    userDisplayName: username,
+                    profilePicUrl: ""
+                });
                 logger.debug(`Registered cheer from ${eventSourceAndType} for user ${username} (${forceNumber(trigger.metadata?.eventData?.bits)}).`);
                 break;
             }
@@ -103,7 +109,12 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                     return;
                 }
 
-                currentStreamCredits[CreditTypes.CHEER].push({username: username, amount: forceNumber(bits)});
+                currentStreamCredits.registerCredit(CreditTypes.CHEER, {
+                    username: username,
+                    amount: forceNumber(bits),
+                    userDisplayName: username,
+                    profilePicUrl: ""
+                });
                 logger.debug(`Registered bits powerup event from ${eventSourceAndType} for user ${username} (${forceNumber(bits)}).`);
                 break;
             }
@@ -127,7 +138,12 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                     return;
                 }
 
-                currentStreamCredits[CreditTypes.DONATION].push({username: user.username, amount: forceNumber(donationAmount)});
+                currentStreamCredits.registerCredit(CreditTypes.DONATION, {
+                    username: user.username,
+                    amount: forceNumber(donationAmount),
+                    userDisplayName: user.displayName || user.username,
+                    profilePicUrl: user.profilePicUrl || ""
+                });
                 logger.debug(`Registered donation/tip from ${eventSourceAndType} for user ${user.username} (${forceNumber(donationAmount)}).`);
                 break;
             }
@@ -141,7 +157,12 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                     return;
                 }
 
-                currentStreamCredits[CreditTypes.FOLLOW].push({username: userName as string, userDisplayName: userDisplayName as string, profilePicUrl: profilePicUrl as string, amount: 0});
+                currentStreamCredits.registerCredit(CreditTypes.FOLLOW, {
+                    username: userName as string,
+                    userDisplayName: userDisplayName as string,
+                    profilePicUrl: profilePicUrl as string,
+                    amount: 0
+                });
                 logger.debug(`Registered follow from ${eventSourceAndType} for user ${userName as string}.`);
                 break;
             }
@@ -161,7 +182,12 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                     return;
                 }
 
-                currentStreamCredits[CreditTypes.GIFT].push({username: username, amount: forceNumber(trigger.metadata?.eventData?.subCount || 1)});
+                currentStreamCredits.registerCredit(CreditTypes.GIFT, {
+                    username: username,
+                    userDisplayName: username,
+                    profilePicUrl: "",
+                    amount: forceNumber(trigger.metadata?.eventData?.subCount || 1)
+                });
                 logger.debug(`Registered subs gifted from ${eventSourceAndType} for user ${username} (${forceNumber(trigger.metadata?.eventData?.subCount || 1)}).`);
                 break;
             }
@@ -173,7 +199,12 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                     return;
                 }
 
-                currentStreamCredits[CreditTypes.RAID].push({username: username, amount: forceNumber(trigger.metadata?.eventData?.viewerCount)});
+                currentStreamCredits.registerCredit(CreditTypes.RAID, {
+                    username: username,
+                    userDisplayName: username,
+                    profilePicUrl: "",
+                    amount: forceNumber(trigger.metadata?.eventData?.viewerCount)
+                });
                 logger.debug(`Registered raid from ${eventSourceAndType} for user ${username} (${forceNumber(trigger.metadata?.eventData?.viewerCount)}).`);
                 break;
             }
@@ -185,7 +216,12 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                     logger.error(`registerCreditEffect: No username provided for trigger. metadata: ${JSON.stringify(trigger.metadata)}`);
                     return;
                 }
-                currentStreamCredits[CreditTypes.SUB].push({username: username, amount: 0});
+                currentStreamCredits.registerCredit(CreditTypes.SUB, {
+                    username: username,
+                    userDisplayName: username,
+                    profilePicUrl: "",
+                    amount: 0
+                });
                 logger.debug(`Registered subscription from ${eventSourceAndType} for user ${username}.`);
                 break;
             }
@@ -204,12 +240,22 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                 }
 
                 if (user.twitchRoles?.includes('vip')) {
-                    currentStreamCredits[CreditTypes.VIP].push({username: user.username, amount: 0});
+                    currentStreamCredits.registerCredit(CreditTypes.VIP, {
+                        username: user.username,
+                        userDisplayName: user.displayName || user.username,
+                        profilePicUrl: user.profilePicUrl || "",
+                        amount: 0
+                    });
                     logger.debug(`Registered VIP chat for user ${username}.`);
                 }
 
                 if (user.twitchRoles?.includes('mod')) {
-                    currentStreamCredits[CreditTypes.MODERATOR].push({username: user.username, amount: 0});
+                    currentStreamCredits.registerCredit(CreditTypes.MODERATOR, {
+                        username: user.username,
+                        userDisplayName: user.displayName || user.username,
+                        profilePicUrl: user.profilePicUrl || "",
+                        amount: 0
+                    });
                     logger.debug(`Registered moderator chat for user ${username}.`);
                 }
 

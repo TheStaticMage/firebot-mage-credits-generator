@@ -21,3 +21,6 @@ node_modules/
 # JSON data for browser source
 /browser-source-files/credits-json.js
 /browser-source-files/credits-config.js
+
+# Test coverage
+/coverage/

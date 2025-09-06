@@ -1,5 +1,6 @@
 import { ReplaceVariable } from '@crowbartools/firebot-custom-scripts-types/types/modules/replace-variable-manager';
-import { currentStreamCredits, firebot, logger } from '../main';
+import { currentStreamCredits } from '../credits-store';
+import { firebot, logger } from '../main';
 import { getFollowers } from '../twitch-api/followers';
 import { getAllSubscribers, getGiftedSubscribers, getGifters, getPaidSubscribers } from '../twitch-api/subscribers';
 import { CreditedUser, CreditTypes, existingCategories } from '../types';
@@ -89,7 +90,7 @@ export const creditedUserList: ReplaceVariable = {
             return [];
         }
 
-        if (category === 'existingGiftersByAmount') {
+        if (category.toLowerCase().endsWith('byamount')) {
             const sortedEntries = collectAndSortByAmount(result);
             return sortedEntries.map(entry => entry.username);
         }
@@ -103,23 +104,23 @@ async function getEntriesByCategory(category: string): Promise<CreditedUser[] | 
     const switchCategory = category.trim().toLocaleLowerCase().endsWith('byamount') ? category.trim().slice(0, -'byamount'.length) : category.trim();
     switch (switchCategory) {
         case CreditTypes.CHEER as string:
-            return collectAndSort(currentStreamCredits[CreditTypes.CHEER], category);
+            return collectAndSort(currentStreamCredits.getCreditsForType(CreditTypes.CHEER) || [], category);
         case CreditTypes.DONATION as string:
-            return collectAndSort(currentStreamCredits[CreditTypes.DONATION], category);
+            return collectAndSort(currentStreamCredits.getCreditsForType(CreditTypes.DONATION) || [], category);
         case CreditTypes.EXTRALIFE as string:
-            return collectAndSort(currentStreamCredits[CreditTypes.EXTRALIFE], category);
+            return collectAndSort(currentStreamCredits.getCreditsForType(CreditTypes.EXTRALIFE) || [], category);
         case CreditTypes.FOLLOW as string:
-            return collectAndSort(currentStreamCredits[CreditTypes.FOLLOW], category);
+            return collectAndSort(currentStreamCredits.getCreditsForType(CreditTypes.FOLLOW) || [], category);
         case CreditTypes.GIFT as string:
-            return collectAndSort(currentStreamCredits[CreditTypes.GIFT], category);
+            return collectAndSort(currentStreamCredits.getCreditsForType(CreditTypes.GIFT) || [], category);
         case CreditTypes.MODERATOR as string:
-            return removeStreamerAndBot(collectAndSort(currentStreamCredits[CreditTypes.MODERATOR], category));
+            return removeStreamerAndBot(collectAndSort(currentStreamCredits.getCreditsForType(CreditTypes.MODERATOR) || [], category));
         case CreditTypes.RAID as string:
-            return collectAndSort(currentStreamCredits[CreditTypes.RAID], category);
+            return collectAndSort(currentStreamCredits.getCreditsForType(CreditTypes.RAID) || [], category);
         case CreditTypes.SUB as string:
-            return collectAndSort(currentStreamCredits[CreditTypes.SUB], category);
+            return collectAndSort(currentStreamCredits.getCreditsForType(CreditTypes.SUB) || [], category);
         case CreditTypes.VIP as string:
-            return removeStreamerAndBot(collectAndSort(currentStreamCredits[CreditTypes.VIP], category));
+            return removeStreamerAndBot(collectAndSort(currentStreamCredits.getCreditsForType(CreditTypes.VIP) || [], category));
         case 'existingAllSubs':
             return collectAndSort(await getAllSubscribers(), category);
         case 'existingFollowers':
@@ -130,13 +131,15 @@ async function getEntriesByCategory(category: string): Promise<CreditedUser[] | 
             return collectAndSort(await getGifters(), category);
         case 'existingPaidSubs':
             return collectAndSort(await getPaidSubscribers(), category);
-        default:
-            if (currentStreamCredits[switchCategory]) {
-                return collectAndSort(currentStreamCredits[switchCategory], category);
+        default: {
+            const customCredits = currentStreamCredits.getCreditsForType(switchCategory);
+            if (customCredits) {
+                return collectAndSort(customCredits, category);
             }
 
             logger.warn(`creditedUserList: Unknown category '${category}' provided.`);
             return [];
+        }
     }
 };
 
@@ -165,7 +168,7 @@ export const creditedUserListJSON: ReplaceVariable = {
         }
 
         const results: Record<string, CreditedUser[]> = {};
-        const allCategories = Object.keys(currentStreamCredits).concat(existingCategories);
+        const allCategories = currentStreamCredits.getCreditKeys().concat(existingCategories);
         for (const category of allCategories.sort()) {
             if (args.length === 1) {
                 const switchCategory = args[0].trim().toLocaleLowerCase().endsWith('byamount') ? args[0].trim().slice(0, -'byamount'.length) : args[0].trim();
@@ -203,6 +206,14 @@ export const creditedUserListJSON: ReplaceVariable = {
                         entry.profilePicUrl = "https://static-cdn.jtvnw.net/user-default-pictures-uv/ead5c8b2-a4c9-4724-b1dd-9f00b46cbd3d-profile_image-300x300.png";
                     }
                 }
+
+                // Sort the results appropriately
+                if (fullCategory.toLowerCase().endsWith('byamount')) {
+                    result.sort((a, b) => b.amount - a.amount || a.username.localeCompare(b.username, undefined, { sensitivity: 'base' }));
+                } else {
+                    result.sort((a, b) => a.username.localeCompare(b.username, undefined, { sensitivity: 'base' }));
+                }
+
                 results[fullCategory] = result;
             }
         }

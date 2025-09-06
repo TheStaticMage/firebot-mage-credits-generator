@@ -34,12 +34,12 @@ export const writeDataFileEffect: Firebot.EffectType<effectParams> = {
         const { effect, trigger } = event;
         const { fs } = firebot.modules;
 
-        const header = `// File maintained by Firebot -- DO NOT EDIT\n`;
-        const jsonData = await creditedUserListJSON.evaluator(trigger);
-        const data = await base64EncodeReplaceVariable.evaluator(trigger, jsonData as string);
-        const content = `${header}\nconst data = "${data}";\n`;
-
         try {
+            const header = `// File maintained by Firebot -- DO NOT EDIT\n`;
+            const jsonData = await creditedUserListJSON.evaluator(trigger);
+            const data = await base64EncodeReplaceVariable.evaluator(trigger, jsonData as string);
+            const content = `${header}\nconst data = "${data}";\n`;
+
             fs.writeFileSync(effect.filepath, content, 'utf8');
             logger.info(`Data successfully written to ${effect.filepath}`);
             return { success: true };

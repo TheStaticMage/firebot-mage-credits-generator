@@ -10,7 +10,10 @@
         "build:version": "node ./scripts/update-version.js",
         "build:webpack": "webpack",
         "copy": "node ./scripts/copy-build.js",
-        "prepare": ""
+        "prepare": "",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage"
     },
     "author": "thestaticmage",
     "license": "GNU3",
@@ -18,7 +21,10 @@
         "@crowbartools/firebot-custom-scripts-types": "TheStaticMage/firebot-custom-scripts-types#running",
         "@eslint/js": "^9.28.0",
         "@stylistic/eslint-plugin": "^4.4.1",
+        "@types/jest": "^30.0.0",
+        "jest": "^30.1.3",
         "terser-webpack-plugin": "^5.3.10",
+        "ts-jest": "^29.4.1",
         "ts-loader": "^9.5.1",
         "typescript": "^5.3.3",
         "typescript-eslint": "^8.33.1",
