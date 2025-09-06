@@ -1,5 +1,6 @@
 import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
-import { currentStreamCredits, logger } from '../main';
+import { currentStreamCredits } from '../credits-store';
+import { logger } from '../main';
 
 type effectParams = {
     all: boolean;
@@ -120,21 +121,20 @@ export const clearCreditsEffect: Firebot.EffectType<effectParams> = {
 
         if (effect.all) {
             // Clear all built-in and custom categories
-            categoriesToClear = Object.keys(currentStreamCredits);
-        } else {
-            categoriesToClear = [
-                ...(Array.isArray(effect.builtInCategories) ? effect.builtInCategories : []),
-                ...effect.customCategories.split(/[\s,]+/).map(entry => entry.trim()).filter(entry => entry.length > 0)
-            ];
+            currentStreamCredits.clearAllCredits();
+            logger.info(`Cleared all credits from all categories.`);
+            return;
         }
+
+        categoriesToClear = [
+            ...(Array.isArray(effect.builtInCategories) ? effect.builtInCategories : []),
+            ...effect.customCategories.split(/[\s,]+/).map(entry => entry.trim()).filter(entry => entry.length > 0)
+        ];
+
         categoriesToClear = Array.from(new Set(categoriesToClear));
 
         // Clear credits for selected categories
-        categoriesToClear.forEach((category) => {
-            if (currentStreamCredits[category]) {
-                currentStreamCredits[category] = [];
-            }
-        });
+        currentStreamCredits.clearCredits(categoriesToClear);
 
         logger.info(`Cleared credits for categories: ${categoriesToClear.join(", ")}`);
     }

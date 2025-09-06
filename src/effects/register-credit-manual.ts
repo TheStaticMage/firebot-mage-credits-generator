@@ -1,6 +1,7 @@
 import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
-import { currentStreamCredits, logger } from '../main';
-import { CreditedUser, CreditTypes } from '../types';
+import { logger } from '../main';
+import { CreditedUser } from '../types';
+import { registerBuiltInCredit } from './common';
 
 type registerCreditManualEffectParams = {
     eventType: string;
@@ -83,46 +84,6 @@ export const registerCreditManualEffect: Firebot.EffectType<registerCreditManual
             profilePicUrl: effect.profilePicUrl?.trim() || ""
         };
 
-        switch (eventType) {
-            case CreditTypes.CHEER as string:
-                currentStreamCredits[CreditTypes.CHEER].push(entry);
-                logger.debug(`Registered cheer: ${JSON.stringify(entry)}`);
-                break;
-            case CreditTypes.DONATION as string:
-                currentStreamCredits[CreditTypes.DONATION].push(entry);
-                logger.debug(`Registered donation/tip: ${JSON.stringify(entry)}`);
-                break;
-            case CreditTypes.EXTRALIFE as string:
-                currentStreamCredits[CreditTypes.EXTRALIFE].push(entry);
-                logger.debug(`Registered Extralife donation: ${JSON.stringify(entry)}`);
-                break;
-            case CreditTypes.FOLLOW as string:
-                currentStreamCredits[CreditTypes.FOLLOW].push(entry);
-                logger.debug(`Registered follow: ${JSON.stringify(entry)}`);
-                break;
-            case CreditTypes.GIFT as string:
-                currentStreamCredits[CreditTypes.GIFT].push(entry);
-                logger.debug(`Registered gift: ${JSON.stringify(entry)}`);
-                break;
-            case CreditTypes.MODERATOR as string:
-                currentStreamCredits[CreditTypes.MODERATOR].push(entry);
-                logger.debug(`Registered moderator: ${JSON.stringify(entry)}`);
-                break;
-            case CreditTypes.RAID as string:
-                currentStreamCredits[CreditTypes.RAID].push(entry);
-                logger.debug(`Registered raid: ${JSON.stringify(entry)}`);
-                break;
-            case CreditTypes.SUB as string:
-                currentStreamCredits[CreditTypes.SUB].push(entry);
-                logger.debug(`Registered sub: ${JSON.stringify(entry)}`);
-                break;
-            case CreditTypes.VIP as string:
-                currentStreamCredits[CreditTypes.VIP].push(entry);
-                logger.debug(`Registered VIP: ${JSON.stringify(entry)}`);
-                break;
-            default:
-                logger.error(`Unknown event type "${eventType}" provided.`);
-                return;
-        }
+        registerBuiltInCredit(entry, eventType);
     }
 };

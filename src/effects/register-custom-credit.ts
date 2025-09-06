@@ -1,5 +1,6 @@
 import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
-import { currentStreamCredits, logger } from '../main';
+import { currentStreamCredits } from '../credits-store';
+import { logger } from '../main';
 import { CreditedUser, ReservedCreditTypes } from '../types';
 
 type registerCustomCreditEffectParams = {
@@ -91,6 +92,11 @@ export const registerCustomCreditEffect: Firebot.EffectType<registerCustomCredit
     onTriggerEvent: async (event) => {
         const { effect } = event;
 
+        if (!effect.creditType) {
+            logger.error(`Invalid credit type provided.`);
+            return;
+        }
+
         const creditType = effect.creditType.trim();
         if (!creditType) {
             logger.error(`Invalid credit type provided.`);
@@ -118,8 +124,6 @@ export const registerCustomCreditEffect: Firebot.EffectType<registerCustomCredit
             profilePicUrl: effect.profilePicUrl?.trim() || ""
         };
 
-        currentStreamCredits[creditType] = currentStreamCredits[creditType] || [];
-        currentStreamCredits[creditType].push(entry);
-        logger.debug(`Registered custom credit "${creditType}" for user: ${JSON.stringify(entry)}`);
+        currentStreamCredits.registerCustomCredit(creditType, entry);
     }
 };
