@@ -10,6 +10,7 @@ const triggers: Effects.TriggersObject = {};
 triggers["event"] = [
     'twitch:cheer',
     'combo-event:bits-combo', // https://github.com/TheStaticMage/firebot-combo-event
+    'mage-kick-integration:kicks-gifted', // Kicks, like bits
     // 'extralife:donation', TODO support in future
     'streamelements:donation',
     // 'streamlabs:donation', TODO support in future
@@ -78,6 +79,7 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
 
         switch (eventSourceAndType) {
             case 'combo-event:bits-combo':
+            case 'mage-kick-integration:kicks-gifted':
             case 'twitch:cheer': {
                 const username = trigger.metadata?.username;
                 if (!username) {
