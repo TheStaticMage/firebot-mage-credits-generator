@@ -61,6 +61,14 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
         return [];
     },
     onTriggerEvent: async (event) => {
+        registerCreditsEffectController.onTriggerEvent(event);
+    }
+};
+
+class RegisterCreditsEffectController {
+    async onTriggerEvent(event: {
+        trigger: Effects.Trigger;
+    }) {
         const trigger = event.trigger;
 
         const eventSource = trigger.metadata?.eventSource?.id;
@@ -123,9 +131,10 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                 break;
             }
             case 'streamelements:donation': {
+                // This sends the donor's name but that's not necessarily a Twitch username.
                 const donor = trigger.metadata?.eventData?.from as string;
                 if (!donor) {
-                    logger.error(`registerCreditEffect: No from provided in the event data. metadata: ${JSON.stringify(trigger.metadata)}`);
+                    logger.error(`registerCreditEffect: No donor ('from') provided in the event data. metadata: ${JSON.stringify(trigger.metadata)}`);
                     return;
                 }
 
@@ -135,20 +144,27 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                     return;
                 }
 
-                const { userDb } = firebot.modules;
-                const user = await userDb.getTwitchUserByUsername(donor);
-                if (user == null) {
-                    logger.warn(`registerCreditEffect: User '${donor}' not found in Firebot user database. Cannot register donation/tip event.`);
-                    return;
+                let displayName = donor;
+                let profilePicUrl = "";
+                let username = donor.replace(/\s+/g, '').toLowerCase(); // Best guess at a username
+
+                const { viewerDatabase } = firebot.modules;
+                const user = await viewerDatabase.getViewerByUsername(username.replace(/\s+/g, '').toLowerCase());
+                if (user) {
+                    displayName = user.displayName || user.username || donor;
+                    username = user.username || donor.replace(/\s+/g, '').toLowerCase();
+                    profilePicUrl = user.profilePicUrl || "";
+                } else {
+                    logger.warn(`registerCreditEffect: User '${donor}' not found in Firebot user database. Registering donation event as best guess.`);
                 }
 
                 currentStreamCredits.registerCredit(CreditTypes.DONATION, {
-                    username: user.username,
+                    username: username,
                     amount: forceNumber(donationAmount),
-                    userDisplayName: user.displayName || user.username,
-                    profilePicUrl: user.profilePicUrl || ""
+                    userDisplayName: displayName,
+                    profilePicUrl: profilePicUrl
                 });
-                logger.debug(`Registered donation/tip from ${eventSourceAndType} for user ${user.username} (${forceNumber(donationAmount)}).`);
+                logger.debug(`Registered donation/tip from ${eventSourceAndType} for donor ${donor} (${forceNumber(donationAmount)}).`);
                 break;
             }
             case 'mage-kick-integration:follow':
@@ -309,9 +325,11 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
                 return;
         }
     }
-};
+}
 
 function forceNumber(value: any): number {
     const num = Number(value);
     return isNaN(num) ? 0 : num;
 }
+
+export const registerCreditsEffectController = new RegisterCreditsEffectController();
