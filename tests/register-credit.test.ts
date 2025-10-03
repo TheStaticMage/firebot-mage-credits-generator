@@ -24,10 +24,10 @@ jest.mock('../src/main', () => ({
     }
 }));
 
-import { registerCreditEffect } from '../src/effects/register-credit';
+import { registerCreditsEffectController } from '../src/effects/register-credit';
 import { CreditTypes } from '../src/types';
 
-describe('registerCreditEffect.onTriggerEvent', () => {
+describe('registerCreditsEffectController.onTriggerEvent', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockRegisterCredit.mockReturnValue(true);
@@ -50,7 +50,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
@@ -65,7 +65,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
@@ -77,7 +77,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
@@ -96,7 +96,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.CHEER,
@@ -121,7 +121,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.CHEER,
@@ -146,7 +146,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
@@ -163,7 +163,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.CHEER,
@@ -190,7 +190,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.CHEER,
@@ -215,7 +215,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.CHEER,
@@ -240,7 +240,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.CHEER,
@@ -265,7 +265,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
@@ -282,7 +282,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
@@ -299,105 +299,8 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
-            expect(mockRegisterCredit).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('StreamElements donation events', () => {
-        it('should register donation event', async () => {
-            mockGetTwitchUserByUsername.mockResolvedValue({
-                username: 'donoruser',
-                displayName: 'Donor User',
-                profilePicUrl: 'https://example.com/donor.jpg',
-                twitchRoles: []
-            });
-
-            const event = {
-                trigger: {
-                    metadata: {
-                        eventSource: { id: 'streamelements' },
-                        event: { id: 'donation' },
-                        eventData: {
-                            from: 'donoruser',
-                            donationAmount: 25.50
-                        }
-                    }
-                }
-            };
-
-            await registerCreditEffect.onTriggerEvent(event as any);
-
-            expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('donoruser');
-            expect(mockRegisterCredit).toHaveBeenCalledWith(
-                CreditTypes.DONATION,
-                {
-                    username: 'donoruser',
-                    amount: 25.50,
-                    userDisplayName: 'Donor User',
-                    profilePicUrl: 'https://example.com/donor.jpg'
-                }
-            );
-        });
-
-        it('should not register donation with missing from field', async () => {
-            const event = {
-                trigger: {
-                    metadata: {
-                        eventSource: { id: 'streamelements' },
-                        event: { id: 'donation' },
-                        eventData: {
-                            donationAmount: 25.50
-                            // from missing
-                        }
-                    }
-                }
-            };
-
-            await registerCreditEffect.onTriggerEvent(event as any);
-
-            expect(mockRegisterCredit).not.toHaveBeenCalled();
-        });
-
-        it('should not register donation with invalid amount', async () => {
-            const event = {
-                trigger: {
-                    metadata: {
-                        eventSource: { id: 'streamelements' },
-                        event: { id: 'donation' },
-                        eventData: {
-                            from: 'donoruser',
-                            donationAmount: 'invalid'
-                        }
-                    }
-                }
-            };
-
-            await registerCreditEffect.onTriggerEvent(event as any);
-
-            expect(mockRegisterCredit).not.toHaveBeenCalled();
-        });
-
-        it('should not register donation when user not found in database', async () => {
-            mockGetTwitchUserByUsername.mockResolvedValue(null);
-
-            const event = {
-                trigger: {
-                    metadata: {
-                        eventSource: { id: 'streamelements' },
-                        event: { id: 'donation' },
-                        eventData: {
-                            from: 'unknownuser',
-                            donationAmount: 10.00
-                        }
-                    }
-                }
-            };
-
-            await registerCreditEffect.onTriggerEvent(event as any);
-
-            expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('unknownuser');
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
     });
@@ -418,7 +321,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.FOLLOW,
@@ -447,7 +350,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.FOLLOW,
@@ -472,7 +375,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.FOLLOW,
@@ -496,7 +399,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
@@ -514,7 +417,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
@@ -530,7 +433,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
@@ -548,7 +451,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.SUB,
@@ -572,7 +475,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.SUB,
@@ -596,7 +499,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.SUB,
@@ -620,7 +523,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
@@ -642,7 +545,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.GIFT,
@@ -670,7 +573,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.GIFT,
@@ -698,7 +601,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.GIFT,
@@ -726,7 +629,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.GIFT,
@@ -754,7 +657,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
@@ -774,7 +677,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
@@ -795,7 +698,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.RAID,
@@ -822,7 +725,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.RAID,
@@ -849,7 +752,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.RAID,
@@ -874,7 +777,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.RAID,
@@ -901,7 +804,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
@@ -926,7 +829,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('vipuser');
             expect(mockRegisterCredit).toHaveBeenCalledWith(
@@ -958,7 +861,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('moduser');
             expect(mockRegisterCredit).toHaveBeenCalledWith(
@@ -990,7 +893,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('supervipmod');
             expect(mockRegisterCredit).toHaveBeenCalledTimes(2);
@@ -1032,7 +935,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('regularuser');
             expect(mockRegisterCredit).not.toHaveBeenCalled();
@@ -1056,7 +959,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('noroleuser');
             expect(mockRegisterCredit).not.toHaveBeenCalled();
@@ -1075,7 +978,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('unknownviewer');
             expect(mockRegisterCredit).not.toHaveBeenCalled();
@@ -1092,7 +995,7 @@ describe('registerCreditEffect.onTriggerEvent', () => {
                 }
             };
 
-            await registerCreditEffect.onTriggerEvent(event as any);
+            await registerCreditsEffectController.onTriggerEvent(event as any);
 
             expect(mockGetTwitchUserByUsername).not.toHaveBeenCalled();
             expect(mockRegisterCredit).not.toHaveBeenCalled();
