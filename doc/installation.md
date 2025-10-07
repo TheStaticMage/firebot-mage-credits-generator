@@ -2,13 +2,13 @@
 
 ## Installation: Script
 
-1. From the latest [Release](https://github.com/TheStaticMage/firebot-mage-credits-generator/releases), download `firebot-mage-credits-generator-<version>.js` into your Firebot scripts directory
+1. Enable custom scripts in Firebot (Settings &gt; Scripts) if you have not already done so.
+
+2. From the latest [Release](https://github.com/TheStaticMage/firebot-mage-credits-generator/releases), download `firebot-mage-credits-generator-<version>.js` into your Firebot scripts directory
 
     (File &gt; Open Data Folder, then select the "scripts" directory)
 
     :warning: Be sure you download the file from the releases page, not the source code of the GitHub repository!
-
-2. Enable custom scripts in Firebot (Settings &gt; Scripts) if you have not already done so.
 
 3. Go to Settings &gt; Scripts &gt; Manage Startup Scripts &gt; Add New Script and add the `firebot-mage-credits-generator-<version>.js` script.
 
@@ -71,10 +71,25 @@ Add this effect to any of the following events that you want to track with the c
 - Sub Gifted (Twitch) - _Gifting a sub credits the gifter_
 - Viewer Arrived (Twitch) - _This is used for VIP and Moderator recognition_
 
+If you are using my [Twitch combo support script](https://github.com/TheStaticMage/firebot-combo-event), you can add this effect to the "Combo" event.
+
+If you are using my [Kick integration](https://github.com/TheStaticMage/firebot-mage-kick-integration), you can add this effect to the following Kick events:
+
+- Community Subs Gifted (Kick)
+- Follow (Kick)
+- Host (Kick) (will be treated as raid)
+- Kicks Gifted (will be treated as bits)
+- Sub Gifted (Kick)
+- Viewer Arrived (Kick)
+
+## Configuration: Manual Events
+
 For other events or within preset effect lists, the **Credit Generator: Register event manually** effect can used. With this effect, you must select the event type and supply the username to credit and the amount to record.
 
 - The username is often `$username` in Firebot, but not necessarily all the time.
 - The amount is typically used for enumerable events, like the number of subs gifted or number of bits cheered. There are some events that really don't have an associated number, like following or chatting, so you can just set this to `1` in those cases.
+
+You can use this effect to register credit for any of the built-in events. If you want to register custom credit types, see: [Custom Credits](/doc/custom-credits.md).
 
 :bulb: Use the "Credit Generator: Register event" instead of the "Credit Generator: Register event manually" event whenever possible.
 

@@ -25,6 +25,10 @@ Features:
   - Uses a JSON data structure for maximum customization possibility
   - Custom events can be tracked
 
+- Compatibility beyond Firebot:
+  - Combos (with my [firebot-combo-event](https://github.com/TheStaticMage/firebot-combo-event) script and Firebot 5.65+)
+  - Kick events (with my [firebot-mage-kick-integration](https://github.com/TheStaticMage/firebot-mage-kick-integration) script)
+
 Feel free to stop by my Twitch stream (<https://www.twitch.tv/thestaticmage>) where you will see me roll the credits at the end of every stream.
 
 ## Documentation
@@ -44,7 +48,7 @@ Feel free to stop by my Twitch stream (<https://www.twitch.tv/thestaticmage>) wh
 The best way to get help is in my Discord server. Join the [The Static Discord](https://discord.gg/WdJaz8439X) and then visit the `#firebot-mage-credits-generator` channel there.
 
 - Please do not DM me on Discord.
-- Please do not ask for help in my chat when I am live on Twitch.
+- Please do not ask for help in my chat when I am streaming.
 
 Bug reports and feature requests are welcome via [GitHub Issues](https://github.com/TheStaticMage/firebot-mage-credits-generator/issues).
 
@@ -59,6 +63,8 @@ This project is released under the [GNU General Public License version 3](/LICEN
 If you use this on your stream, I would appreciate a shout-out. (Appreciated, but not required.)
 
 - <https://www.twitch.tv/thestaticmage>
+- <https://kick.com/thestaticmage>
+- <https://youtube.com/@thestaticmagerisk>
 
 ## Alternatives
 
