@@ -1,12 +1,12 @@
 import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
-import { Effects } from '@crowbartools/firebot-custom-scripts-types/types/effects';
+import { Trigger, TriggersObject } from '@crowbartools/firebot-custom-scripts-types/types/triggers';
 import { currentStreamCredits } from '../credits-store';
 import { firebot, logger } from '../main';
 import { CreditedUser, CreditTypes } from '../types';
 
 type registerCreditEffectParams = Record<string, never>;
 
-const triggers: Effects.TriggersObject = {};
+const triggers: TriggersObject = {};
 triggers["event"] = [
     'twitch:cheer',
     'combo-event:bits-combo', // https://github.com/TheStaticMage/firebot-combo-event
@@ -67,7 +67,7 @@ export const registerCreditEffect: Firebot.EffectType<registerCreditEffectParams
 
 class RegisterCreditsEffectController {
     async onTriggerEvent(event: {
-        trigger: Effects.Trigger;
+        trigger: Trigger;
     }) {
         const trigger = event.trigger;
 
