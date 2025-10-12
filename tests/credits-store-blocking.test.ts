@@ -38,4 +38,18 @@ describe('CreditsStore blocking and clearing', () => {
         const credits = store.getCreditsForType(CreditTypes.VIP);
         expect(credits?.map(u => u.username)).toEqual(['Charlie']);
     });
+
+    it('unblockCreditsByUser restores user to getCreditsForType', () => {
+        store.blockCreditsByUser('Bob');
+        expect(store.getCreditsForType(CreditTypes.VIP)?.map(u => u.username)).toEqual(['Alice', 'Charlie']);
+        store.unblockCreditsByUser('Bob');
+        expect(store.getCreditsForType(CreditTypes.VIP)?.map(u => u.username)).toEqual(['Alice', 'Bob', 'Charlie']);
+    });
+
+    it('unblockCreditsByUser updates isUserBlocked', () => {
+        store.blockCreditsByUser('Charlie');
+        expect(store.isUserBlocked('Charlie')).toBe(true);
+        store.unblockCreditsByUser('Charlie');
+        expect(store.isUserBlocked('Charlie')).toBe(false);
+    });
 });

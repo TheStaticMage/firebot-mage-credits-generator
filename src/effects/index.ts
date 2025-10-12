@@ -8,6 +8,7 @@ import { registerCreditBulkEffect } from './register-credit-bulk';
 import { registerCreditManualEffect } from './register-credit-manual';
 import { registerCustomCreditEffect } from './register-custom-credit';
 import { writeDataFileEffect } from './write-data-file';
+import { unblockCreditsByUserEffect } from './unblock-by-user';
 
 export function registerEffects(firebot: RunRequest<any>) {
     const { effectManager } = firebot.modules;
@@ -18,6 +19,7 @@ export function registerEffects(firebot: RunRequest<any>) {
     effectManager.registerEffect(registerCreditBulkEffect);
     effectManager.registerEffect(registerCreditEffect);
     effectManager.registerEffect(registerCreditManualEffect);
+    effectManager.registerEffect(unblockCreditsByUserEffect);
     effectManager.registerEffect(writeDataFileEffect);
 
     if (firebot.parameters.enableCustomCredits) {

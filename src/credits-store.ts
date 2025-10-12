@@ -79,6 +79,10 @@ export class CreditsStore {
         this.blockedUsers.add(username.toLowerCase());
     }
 
+    unblockCreditsByUser(username: string) {
+        this.blockedUsers.delete(username.toLowerCase());
+    }
+
     isUserBlocked(username: string): boolean {
         return this.blockedUsers.has(username.toLowerCase());
     }
