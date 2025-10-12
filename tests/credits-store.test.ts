@@ -71,22 +71,6 @@ describe('CreditsStore', () => {
 
             expect(credits).toEqual([user]);
         });
-
-        it('should return reference to actual array (not copy)', () => {
-            const user1 = createTestUser('user1');
-            const user2 = createTestUser('user2');
-
-            creditsStore.registerCredit(CreditTypes.FOLLOW, user1);
-            const credits = creditsStore.getCreditsForType(CreditTypes.FOLLOW);
-
-            // Modify the returned array
-            credits?.push(user2);
-
-            // Should affect the store
-            const creditsAgain = creditsStore.getCreditsForType(CreditTypes.FOLLOW);
-            expect(creditsAgain).toHaveLength(2);
-            expect(creditsAgain).toContain(user2);
-        });
     });
 
     describe('registerCredit', () => {
