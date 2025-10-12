@@ -10,7 +10,7 @@ export let firebot: RunRequest<any>;
 export let logger: Logger;
 export let server: Server | null = null;
 
-const scriptVersion = '0.2.5';
+const scriptVersion = '0.3.0';
 
 const script: Firebot.CustomScript<Parameters> = {
     getScriptManifest: () => {
@@ -48,6 +48,23 @@ const script: Firebot.CustomScript<Parameters> = {
         };
     },
     run: (runRequest) => {
+        // Make sure we have a sufficiently recent version of Firebot.
+        // We need https://github.com/crowbartools/Firebot/commit/39eb2629acc48daf03113db6fb44f5ebf2fe2062
+        if (!runRequest || !runRequest.firebot || !runRequest.firebot.version) {
+            throw new Error("Firebot version information is not available.");
+        }
+
+        const firebotVersion = runRequest.firebot.version;
+        const firebotParts = firebotVersion.split('.');
+        const majorVersion = parseInt(firebotParts[0], 10);
+        const minorVersion = parseInt(firebotParts[1] || '0', 10);
+        if (isNaN(majorVersion) || isNaN(minorVersion) || majorVersion < 5 || (majorVersion === 5 && minorVersion < 65)) {
+            const { frontendCommunicator } = runRequest.modules;
+            frontendCommunicator.send("error", `The installed version of Mage Credits Generator requires Firebot 5.65 or later. You are running Firebot ${firebotVersion}. Please update Firebot to use this plugin.`);
+            return;
+        }
+
+        // Run everything else.
         firebot = runRequest;
         logger = runRequest.modules.logger;
         server = new Server();
