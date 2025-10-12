@@ -2,13 +2,24 @@
 // If you find yourself needing to modify this file, please consider
 // submitting a pull request to improve the code for everyone.
 
-window.onload = function() {
+window.onload = async function() {
     const creditsContainer = document.getElementById('credits-container');
     creditsContainer.innerHTML = '';
     const creditsContainerParentHeight = creditsContainer.parentElement.offsetHeight;
 
     let totalDuration = 2000;
-    const parsedData = JSON.parse(atob(data));
+
+    // Load JSON data
+    let parsedData;
+    try {
+        const response = await fetch('./data.json');
+        parsedData = await response.json();
+        console.log('Loaded credits data, length:', Object.keys(parsedData).length);
+    } catch (error) {
+        console.error('Failed to load credits data:', error);
+        return;
+    }
+
     let hasPreviousSection = false;
     for (const section of sectionsConfig) {
         if (!section.hasOwnProperty('header')) {
@@ -127,7 +138,7 @@ window.onload = function() {
         } else {
             console.log('Credits animation completed.');
             creditsContainer.parentElement.style.display = 'none'; // Hide after animation completes
-            fetch('complete' + window.location.search, { method: 'GET' })
+            fetch('complete', { method: 'GET' })
         }
     }
 
