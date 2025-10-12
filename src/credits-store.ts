@@ -13,13 +13,17 @@ export class CreditsStore {
         [CreditTypes.VIP]: new Array<CreditedUser>()
     };
 
+    private blockedUsers = new Set<string>();
+
     getCreditKeys(): string[] {
         return Object.keys(this.data);
     }
 
     getCreditsForType(eventType: string): CreditedUser[] | null {
         if (this.data[eventType]) {
-            return this.data[eventType];
+            return this.data[eventType].filter(
+                creditedUser => !this.blockedUsers.has(creditedUser.username.toLowerCase())
+            );
         }
         return null;
     }
@@ -61,6 +65,26 @@ export class CreditsStore {
         Object.keys(this.data).forEach((category) => {
             this.data[category] = [];
         });
+    }
+
+    clearCreditsByUser(username: string) {
+        Object.keys(this.data).forEach((category) => {
+            this.data[category] = this.data[category].filter(
+                creditedUser => creditedUser.username.toLowerCase() !== username.toLowerCase()
+            );
+        });
+    }
+
+    blockCreditsByUser(username: string) {
+        this.blockedUsers.add(username.toLowerCase());
+    }
+
+    unblockCreditsByUser(username: string) {
+        this.blockedUsers.delete(username.toLowerCase());
+    }
+
+    isUserBlocked(username: string): boolean {
+        return this.blockedUsers.has(username.toLowerCase());
     }
 }
 
