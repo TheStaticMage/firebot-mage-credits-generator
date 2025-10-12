@@ -1,6 +1,6 @@
 // Mock the dependencies
 const mockRegisterCredit = jest.fn();
-const mockGetTwitchUserByUsername = jest.fn();
+const mockGetViewerByUsername = jest.fn();
 
 jest.mock('../src/credits-store', () => ({
     currentStreamCredits: {
@@ -11,8 +11,8 @@ jest.mock('../src/credits-store', () => ({
 jest.mock('../src/main', () => ({
     firebot: {
         modules: {
-            userDb: {
-                getTwitchUserByUsername: mockGetTwitchUserByUsername
+            viewerDatabase: {
+                getViewerByUsername: mockGetViewerByUsername
             }
         }
     },
@@ -31,11 +31,10 @@ describe('registerCreditsEffectController.onTriggerEvent', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockRegisterCredit.mockReturnValue(true);
-        mockGetTwitchUserByUsername.mockResolvedValue({
+        mockGetViewerByUsername.mockResolvedValue({
             username: 'testuser',
             displayName: 'Test User',
-            profilePicUrl: 'https://example.com/pic.jpg',
-            twitchRoles: []
+            profilePicUrl: 'https://example.com/pic.jpg'
         });
     });
 
@@ -812,26 +811,27 @@ describe('registerCreditsEffectController.onTriggerEvent', () => {
 
     describe('Viewer arrived events (VIP and Moderator detection)', () => {
         it('should register VIP when viewer has VIP role', async () => {
-            mockGetTwitchUserByUsername.mockResolvedValue({
-                username: 'vipuser',
-                displayName: 'VIP User',
-                profilePicUrl: 'https://example.com/vip.jpg',
-                twitchRoles: ['vip']
-            });
-
             const event = {
                 trigger: {
                     metadata: {
                         eventSource: { id: 'twitch' },
                         event: { id: 'viewer-arrived' },
-                        username: 'vipuser'
+                        username: 'vipuser',
+                        eventData: {
+                            chatMessage: {
+                                username: 'vipuser',
+                                userDisplayName: 'VIP User',
+                                profilePicUrl: 'https://example.com/vip.jpg',
+                                roles: ['vip'],
+                                isVip: true
+                            }
+                        }
                     }
                 }
             };
 
             await registerCreditsEffectController.onTriggerEvent(event as any);
 
-            expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('vipuser');
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.VIP,
                 {
@@ -844,26 +844,27 @@ describe('registerCreditsEffectController.onTriggerEvent', () => {
         });
 
         it('should register moderator when viewer has mod role', async () => {
-            mockGetTwitchUserByUsername.mockResolvedValue({
-                username: 'moduser',
-                displayName: 'Mod User',
-                profilePicUrl: 'https://example.com/mod.jpg',
-                twitchRoles: ['mod']
-            });
-
             const event = {
                 trigger: {
                     metadata: {
                         eventSource: { id: 'twitch' },
                         event: { id: 'viewer-arrived' },
-                        username: 'moduser'
+                        username: 'moduser',
+                        eventData: {
+                            chatMessage: {
+                                username: 'moduser',
+                                userDisplayName: 'Mod User',
+                                profilePicUrl: 'https://example.com/mod.jpg',
+                                roles: ['mod'],
+                                isMod: true
+                            }
+                        }
                     }
                 }
             };
 
             await registerCreditsEffectController.onTriggerEvent(event as any);
 
-            expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('moduser');
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.MODERATOR,
                 {
@@ -876,26 +877,28 @@ describe('registerCreditsEffectController.onTriggerEvent', () => {
         });
 
         it('should register both VIP and moderator when viewer has both roles', async () => {
-            mockGetTwitchUserByUsername.mockResolvedValue({
-                username: 'supervipmod',
-                displayName: 'Super VIP Mod',
-                profilePicUrl: 'https://example.com/supervipmod.jpg',
-                twitchRoles: ['vip', 'mod']
-            });
-
             const event = {
                 trigger: {
                     metadata: {
                         eventSource: { id: 'twitch' },
                         event: { id: 'viewer-arrived' },
-                        username: 'supervipmod'
+                        username: 'supervipmod',
+                        eventData: {
+                            chatMessage: {
+                                username: 'supervipmod',
+                                userDisplayName: 'Super VIP Mod',
+                                profilePicUrl: 'https://example.com/supervipmod.jpg',
+                                roles: ['vip', 'mod'],
+                                isVip: true,
+                                isMod: true
+                            }
+                        }
                     }
                 }
             };
 
             await registerCreditsEffectController.onTriggerEvent(event as any);
 
-            expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('supervipmod');
             expect(mockRegisterCredit).toHaveBeenCalledTimes(2);
             expect(mockRegisterCredit).toHaveBeenCalledWith(
                 CreditTypes.VIP,
@@ -918,87 +921,178 @@ describe('registerCreditsEffectController.onTriggerEvent', () => {
         });
 
         it('should not register anything when viewer has no special roles', async () => {
-            mockGetTwitchUserByUsername.mockResolvedValue({
-                username: 'regularuser',
-                displayName: 'Regular User',
-                profilePicUrl: 'https://example.com/regular.jpg',
-                twitchRoles: []
-            });
-
             const event = {
                 trigger: {
                     metadata: {
                         eventSource: { id: 'twitch' },
                         event: { id: 'viewer-arrived' },
-                        username: 'regularuser'
+                        username: 'regularuser',
+                        eventData: {
+                            chatMessage: {
+                                username: 'regularuser',
+                                userDisplayName: 'Regular User',
+                                profilePicUrl: 'https://example.com/regular.jpg',
+                                roles: [],
+                                isVip: false,
+                                isMod: false
+                            }
+                        }
                     }
                 }
             };
 
             await registerCreditsEffectController.onTriggerEvent(event as any);
 
-            expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('regularuser');
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
 
-        it('should handle viewer with undefined twitchRoles', async () => {
-            mockGetTwitchUserByUsername.mockResolvedValue({
-                username: 'noroleuser',
-                displayName: 'No Role User',
-                profilePicUrl: 'https://example.com/norole.jpg'
-                // twitchRoles is undefined
-            });
-
+        it('should not register viewer-arrived with missing chatMessage', async () => {
             const event = {
                 trigger: {
                     metadata: {
                         eventSource: { id: 'twitch' },
                         event: { id: 'viewer-arrived' },
-                        username: 'noroleuser'
+                        username: 'testuser'
+                        // eventData.chatMessage missing
                     }
                 }
             };
 
             await registerCreditsEffectController.onTriggerEvent(event as any);
 
-            expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('noroleuser');
             expect(mockRegisterCredit).not.toHaveBeenCalled();
         });
 
-        it('should not register viewer-arrived when user not found in database', async () => {
-            mockGetTwitchUserByUsername.mockResolvedValue(null);
-
+        it('should register VIP for mage-kick-integration with username ending in @kick', async () => {
             const event = {
                 trigger: {
                     metadata: {
-                        eventSource: { id: 'twitch' },
+                        eventSource: { id: 'mage-kick-integration' },
                         event: { id: 'viewer-arrived' },
-                        username: 'unknownviewer'
+                        username: 'kickuser@kick',
+                        eventData: {
+                            chatMessage: {
+                                username: 'kickuser@kick',
+                                userDisplayName: 'Kick User',
+                                profilePicUrl: 'https://example.com/kickuser.jpg',
+                                roles: ['vip'],
+                                isVip: true
+                            }
+                        }
                     }
                 }
             };
 
             await registerCreditsEffectController.onTriggerEvent(event as any);
 
-            expect(mockGetTwitchUserByUsername).toHaveBeenCalledWith('unknownviewer');
-            expect(mockRegisterCredit).not.toHaveBeenCalled();
+            expect(mockRegisterCredit).toHaveBeenCalledWith(
+                CreditTypes.VIP,
+                {
+                    username: 'kickuser@kick',
+                    userDisplayName: 'Kick User',
+                    profilePicUrl: 'https://example.com/kickuser.jpg',
+                    amount: 0
+                }
+            );
         });
 
-        it('should not register viewer-arrived with missing username', async () => {
+        it('should register VIP for mage-kick-integration with username NOT ending in @kick', async () => {
+            const event = {
+                trigger: {
+                    metadata: {
+                        eventSource: { id: 'mage-kick-integration' },
+                        event: { id: 'viewer-arrived' },
+                        username: 'kickuser',
+                        eventData: {
+                            chatMessage: {
+                                username: 'kickuser',
+                                // No userDisplayName provided, should derive from username
+                                profilePicUrl: 'https://example.com/kickuser.jpg',
+                                roles: ['vip'],
+                                isVip: true
+                            }
+                        }
+                    }
+                }
+            };
+
+            await registerCreditsEffectController.onTriggerEvent(event as any);
+
+            expect(mockRegisterCredit).toHaveBeenCalledWith(
+                CreditTypes.VIP,
+                {
+                    username: 'kickuser@kick', // Should be modified to add @kick
+                    userDisplayName: 'kickuser', // Should be derived from username without @kick
+                    profilePicUrl: 'https://example.com/kickuser.jpg',
+                    amount: 0
+                }
+            );
+        });
+
+        it('should register VIP for twitch:chat-message event', async () => {
             const event = {
                 trigger: {
                     metadata: {
                         eventSource: { id: 'twitch' },
-                        event: { id: 'viewer-arrived' }
-                        // username missing
+                        event: { id: 'chat-message' },
+                        username: 'twitchvip',
+                        eventData: {
+                            chatMessage: {
+                                username: 'twitchvip',
+                                userDisplayName: 'Twitch VIP',
+                                profilePicUrl: 'https://example.com/twitchvip.jpg',
+                                roles: ['vip'],
+                                isVip: true
+                            }
+                        }
                     }
                 }
             };
 
             await registerCreditsEffectController.onTriggerEvent(event as any);
 
-            expect(mockGetTwitchUserByUsername).not.toHaveBeenCalled();
-            expect(mockRegisterCredit).not.toHaveBeenCalled();
+            expect(mockRegisterCredit).toHaveBeenCalledWith(
+                CreditTypes.VIP,
+                {
+                    username: 'twitchvip',
+                    userDisplayName: 'Twitch VIP',
+                    profilePicUrl: 'https://example.com/twitchvip.jpg',
+                    amount: 1 // Chat messages have amount: 1
+                }
+            );
+        });
+
+        it('should register VIP for mage-kick-integration:chat-message event', async () => {
+            const event = {
+                trigger: {
+                    metadata: {
+                        eventSource: { id: 'mage-kick-integration' },
+                        event: { id: 'chat-message' },
+                        username: 'kickvip',
+                        eventData: {
+                            chatMessage: {
+                                username: 'kickvip',
+                                userDisplayName: 'Kick VIP',
+                                profilePicUrl: 'https://example.com/kickvip.jpg',
+                                roles: ['vip'],
+                                isVip: true
+                            }
+                        }
+                    }
+                }
+            };
+
+            await registerCreditsEffectController.onTriggerEvent(event as any);
+
+            expect(mockRegisterCredit).toHaveBeenCalledWith(
+                CreditTypes.VIP,
+                {
+                    username: 'kickvip@kick', // Should be modified to add @kick
+                    userDisplayName: 'Kick VIP',
+                    profilePicUrl: 'https://example.com/kickvip.jpg',
+                    amount: 1 // Chat messages have amount: 1
+                }
+            );
         });
     });
 });
