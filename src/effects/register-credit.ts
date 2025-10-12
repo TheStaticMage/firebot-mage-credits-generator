@@ -29,7 +29,9 @@ triggers["event"] = [
     'mage-kick-integration:sub',
     'twitch:sub',
     'twitch:gift-sub-upgraded',
+    'mage-kick-integration:chat-message',
     'mage-kick-integration:viewer-arrived',
+    'twitch:chat-message',
     'twitch:viewer-arrived',
     "twitch:bits-powerup-message-effect",
     "twitch:bits-powerup-celebration",
@@ -245,7 +247,10 @@ class RegisterCreditsEffectController {
                 logger.debug(`Registered subscription from ${eventSourceAndType} for user ${username}.`);
                 break;
             }
-            case 'mage-kick-integration:viewer-arrived': {
+            case 'mage-kick-integration:chat-message':
+            case 'mage-kick-integration:viewer-arrived':
+            case 'twitch:chat-message':
+            case 'twitch:viewer-arrived': {
                 const metadata = trigger.metadata;
                 if (!metadata || !metadata.eventData || !metadata.eventData.chatMessage) {
                     logger.error(`registerCreditEffect: Missing metadata for Kick viewer-arrived event.`);
@@ -258,64 +263,41 @@ class RegisterCreditsEffectController {
                     userDisplayName?: string;
                     profilePicUrl?: string;
                     roles: string[];
+                    isFounder?: boolean;
+                    isBroadcaster?: boolean;
+                    isBot?: boolean;
+                    isMod?: boolean;
+                    isSubscriber?: boolean;
+                    isVip?: boolean;
+                    isFirstChat?: boolean;
                 }
 
                 const chatMessage = metadata.eventData.chatMessage as partOfFirebotChatMessage;
-                const username = chatMessage.username.endsWith("@kick") ? chatMessage.username : `${chatMessage.username}@kick`;
-                const userDisplayName = chatMessage.userDisplayName || username.substring(0, username.length - 5);
-                const profilePicUrl = chatMessage.profilePicUrl || "";
+                if (!chatMessage || !chatMessage.username) {
+                    logger.error(`registerCreditEffect: Invalid chatMessage provided for chat-message/viewer-arrived event. metadata: ${JSON.stringify(trigger.metadata)}`);
+                    return;
+                }
 
                 const userEntry: CreditedUser = {
-                    username: username,
-                    userDisplayName: userDisplayName,
-                    profilePicUrl: profilePicUrl,
-                    amount: 0
+                    username: chatMessage.username,
+                    userDisplayName: chatMessage.userDisplayName || chatMessage.username,
+                    profilePicUrl: chatMessage.profilePicUrl || "",
+                    amount: eventType === 'chat-message' ? 1 : 0 // Count chat messages
                 };
 
-                if (chatMessage.roles.includes('vip')) {
+                if (eventSource === 'mage-kick-integration') {
+                    userEntry.username = chatMessage.username.endsWith("@kick") ? chatMessage.username : `${chatMessage.username}@kick`;
+                    userEntry.userDisplayName = chatMessage.userDisplayName || userEntry.username.substring(0, userEntry.username.length - 5);
+                }
+
+                if (chatMessage.roles.includes('vip') || chatMessage.isVip) {
                     currentStreamCredits.registerCredit(CreditTypes.VIP, userEntry);
-                    logger.debug(`Registered VIP chat for user ${username}.`);
+                    logger.debug(`Registered VIP chat for user ${userEntry.username}.`);
                 }
 
-                if (chatMessage.roles.includes('mod')) {
+                if (chatMessage.roles.includes('mod') || chatMessage.isMod) {
                     currentStreamCredits.registerCredit(CreditTypes.MODERATOR, userEntry);
-                    logger.debug(`Registered moderator chat for user ${username}.`);
-                }
-
-                break;
-            }
-            case 'twitch:viewer-arrived': {
-                const username = trigger.metadata?.username;
-                if (!username) {
-                    logger.error(`registerCreditEffect: No username provided for viewer-arrived event. metadata: ${JSON.stringify(trigger.metadata)}`);
-                    return;
-                }
-
-                const { userDb } = firebot.modules;
-                const user = await userDb.getTwitchUserByUsername(username);
-                if (user == null) {
-                    logger.warn(`registerCreditEffect: User '${username}' not found in Firebot user database. Cannot register viewer-arrived event.`);
-                    return;
-                }
-
-                if (user.twitchRoles?.includes('vip')) {
-                    currentStreamCredits.registerCredit(CreditTypes.VIP, {
-                        username: user.username,
-                        userDisplayName: user.displayName || user.username,
-                        profilePicUrl: user.profilePicUrl || "",
-                        amount: 0
-                    });
-                    logger.debug(`Registered VIP chat for user ${username}.`);
-                }
-
-                if (user.twitchRoles?.includes('mod')) {
-                    currentStreamCredits.registerCredit(CreditTypes.MODERATOR, {
-                        username: user.username,
-                        userDisplayName: user.displayName || user.username,
-                        profilePicUrl: user.profilePicUrl || "",
-                        amount: 0
-                    });
-                    logger.debug(`Registered moderator chat for user ${username}.`);
+                    logger.debug(`Registered moderator chat for user ${userEntry.username}.`);
                 }
 
                 break;
