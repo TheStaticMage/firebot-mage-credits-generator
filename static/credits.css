@@ -114,3 +114,120 @@ p.user-display-name {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     white-space: pre-line;
 }
+
+/*
+Slideshow mode styles - used when displayMode is set to "slideshow"
+*/
+
+/*
+.slideshow-container is the main container for slideshow mode. It's hidden by
+default and shown when slideshow mode is active.
+*/
+.slideshow-container {
+    display: none;
+    width: 100%;
+    height: 100vh; /* Use viewport height instead of 100% */
+    position: relative;
+    align-items: center;
+    background-color: rgba(150, 80, 190, 1.0);
+    border-radius: 25px;
+    justify-content: center;
+    justify-content: space-around;
+    margin: 20px auto;
+    overflow: hidden;
+    box-sizing: border-box; /* Include margins and padding in size calculation */
+}
+
+/*
+.slide-content contains the content for each slide including the category header
+and the grid of entries. It supports fade transitions between slides.
+*/
+.slide-content {
+    opacity: 1;
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box; /* Include padding in height calculation */
+}
+
+/*
+.slide-content.fade-out is used during slide transitions to fade out the current
+slide before showing the next one.
+*/
+.slide-content.fade-out {
+    opacity: 0;
+}
+
+/*
+.category-header displays the category name at the top of each slide in slideshow mode.
+*/
+.category-header {
+    color: #fff;
+    font-size: 42px;
+    font-weight: 700;
+    margin-top: 0px;
+    margin-bottom: 30px;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/*
+.slide-grid is the container for entries in slideshow mode. It uses CSS Grid to
+arrange entries in rows and columns. The grid dimensions are set dynamically
+by JavaScript based on the configuration.
+*/
+.slide-grid {
+    display: grid;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex: 1;
+    place-items: center;
+    margin: 20px;
+}
+
+/*
+.slide-grid.fade-out is used during same-category slide transitions to fade out
+only the grid content while keeping the header visible.
+*/
+.slide-grid.fade-out {
+    opacity: 0;
+}
+
+/*
+.slide-entry is used for each individual entry within the slide grid. It centers
+the content both horizontally and vertically within its grid cell.
+*/
+.slide-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/*
+Slideshow mode uses smaller images and text to fit more entries per slide
+*/
+.slideshow-container img.avatar {
+    border-radius: 50%;
+    height: 80px;
+    width: 80px;
+}
+
+.slideshow-container p.user-display-name {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 300;
+    margin: 8px 0 0 0;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    white-space: pre-line;
+}

@@ -3,13 +3,7 @@
 // submitting a pull request to improve the code for everyone.
 
 window.onload = async function() {
-    const creditsContainer = document.getElementById('credits-container');
-    creditsContainer.innerHTML = '';
-    const creditsContainerParentHeight = creditsContainer.parentElement.offsetHeight;
-
-    let totalDuration = 2000;
-
-    // Load JSON data
+    // Load JSON data first
     let parsedData;
     try {
         const response = await fetch('./data.json');
@@ -19,6 +13,53 @@ window.onload = async function() {
         console.error('Failed to load credits data:', error);
         return;
     }
+
+    // Ensure slideshow config has defaults for backward compatibility
+    if (!config.slideshow) {
+        config.slideshow = {};
+    }
+    if (config.slideshow.defaultMaxRows === undefined) {
+        config.slideshow.defaultMaxRows = 3;
+    }
+    if (config.slideshow.defaultMaxColumns === undefined) {
+        config.slideshow.defaultMaxColumns = 4;
+    }
+    if (config.slideshow.defaultSlideDuration === undefined) {
+        config.slideshow.defaultSlideDuration = 5000;
+    }
+    if (config.slideshow.fadeOutDuration === undefined) {
+        config.slideshow.fadeOutDuration = 500;
+    }
+    if (config.slideshow.fadeInDuration === undefined) {
+        config.slideshow.fadeInDuration = 500;
+    }
+    if (config.slideshow.initialFadeInDuration === undefined) {
+        config.slideshow.initialFadeInDuration = 0;
+    }
+    if (config.slideshow.finalFadeOutDuration === undefined) {
+        config.slideshow.finalFadeOutDuration = 2000;
+    }
+    if (config.slideshow.categoryHeaderEnabled === undefined) {
+        config.slideshow.categoryHeaderEnabled = true;
+    }
+    if (config.slideshow.fadeBetweenSameCategorySlides === undefined) {
+        config.slideshow.fadeBetweenSameCategorySlides = true;
+    }
+
+    // Route to appropriate display mode
+    if (config.displayMode === 'slideshow') {
+        await runSlideshowMode(parsedData);
+    } else {
+        await runScrollMode(parsedData);
+    }
+};
+
+async function runScrollMode(parsedData) {
+    const creditsContainer = document.getElementById('credits-container');
+    creditsContainer.innerHTML = '';
+    const creditsContainerParentHeight = creditsContainer.parentElement.offsetHeight;
+
+    let totalDuration = 2000;
 
     let hasPreviousSection = false;
     for (const section of sectionsConfig) {
@@ -138,10 +179,401 @@ window.onload = async function() {
         } else {
             console.log('Credits animation completed.');
             creditsContainer.parentElement.style.display = 'none'; // Hide after animation completes
-            fetch('complete', { method: 'GET' })
+            fetch('./complete', { method: 'GET' })
         }
     }
 
     console.log(`Beginning credits animation with total duration: ${totalDuration}ms`);
     requestAnimationFrame(animate);
-};
+}
+
+async function runSlideshowMode(parsedData) {
+    const slides = generateSlides(parsedData);
+
+    if (slides.length === 0) {
+        console.log('No slides to display');
+        return;
+    }
+
+    // Show slideshow container, hide scroll container
+    document.getElementById('credits-container').style.display = 'none';
+    const slideshowContainer = document.getElementById('slideshow-container');
+    slideshowContainer.style.display = 'flex';
+
+    // Handle initial fade-in if configured
+    if (config.slideshow.initialFadeInDuration > 0) {
+        slideshowContainer.style.opacity = '0'; // Start transparent
+        slideshowContainer.style.transition = `opacity ${config.slideshow.initialFadeInDuration}ms ease-in-out`;
+        document.getElementById('credits-outer-container').style.display = 'block';
+
+        // Trigger fade-in
+        setTimeout(() => {
+            slideshowContainer.style.opacity = '1';
+        }, 10); // Small delay to ensure transition is applied
+
+        // Wait for initial fade-in to complete
+        await sleep(config.slideshow.initialFadeInDuration);
+    } else {
+        slideshowContainer.style.opacity = '1'; // Start fully visible
+        document.getElementById('credits-outer-container').style.display = 'block';
+    }
+
+    console.log(`Beginning slideshow with ${slides.length} slides`);
+
+    // Play through all slides
+    for (let i = 0; i < slides.length; i++) {
+        const isFirstSlide = i === 0;
+        const isLastSlide = i === slides.length - 1;
+        const isCategoryChange = isFirstSlide || (slides[i].categoryHeader !== slides[i - 1].categoryHeader);
+
+        console.log(`Displaying slide ${i + 1}/${slides.length}: ${slides[i].categoryHeader} (${slides[i].entries.length} entries)`);
+        await displaySlide(slides[i], isCategoryChange, isLastSlide);
+    }
+
+    // Fade out the final slide before completing
+    console.log('Slideshow completed. Fading out to transparent...');
+
+    // Apply fade transition and fade to completely transparent
+    slideshowContainer.style.transition = `opacity ${config.slideshow.finalFadeOutDuration}ms ease-in-out`;
+    slideshowContainer.style.opacity = '0';
+
+    await sleep(config.slideshow.finalFadeOutDuration);
+
+    // Complete
+    document.getElementById('credits-outer-container').style.display = 'none';
+    fetch('./complete', { method: 'GET' });
+}
+
+function generateSlides(parsedData) {
+    const slides = [];
+
+    for (const section of sectionsConfig) {
+        if (!section.hasOwnProperty('header')) {
+            console.warn('Section is missing required "header" property:', section);
+            continue;
+        }
+
+        if (!section.hasOwnProperty('key')) {
+            console.warn('Section is missing required "key" property:', section);
+            continue;
+        }
+
+        const entries = parsedData[section.key] || [];
+
+        // Check if this is a blank slide that should be displayed even with no entries
+        const isBlankSlide = section.isBlankSlide === true;
+
+        if (entries.length === 0 && !isBlankSlide) {
+            console.log(`Skipping section: ${section.header} (${section.key}: no entries)`);
+            continue;
+        }
+
+        // Apply limit if specified
+        let limitedEntries = entries;
+        if (section.hasOwnProperty('limit')) {
+            limitedEntries = entries.slice(0, section.limit);
+            console.log(`Applied limit ${section.limit} to section: ${section.header}`);
+        }
+
+        const maxRows = section.maxRows || config.slideshow.defaultMaxRows;
+        const maxColumns = section.maxColumns || config.slideshow.defaultMaxColumns;
+        const entriesPerSlide = maxRows * maxColumns;
+
+        // Handle blank slides (display one slide with no entries)
+        if (isBlankSlide) {
+            console.log(`Creating blank slide: ${section.header} (${section.key})`);
+            slides.push({
+                categoryHeader: section.header,
+                entries: [], // Empty array for blank slide
+                duration: section.slideDuration || config.slideshow.defaultSlideDuration,
+                maxRows: maxRows,
+                maxColumns: maxColumns,
+                fadeBetweenSameCategorySlides: section.fadeBetweenSameCategorySlides !== undefined
+                    ? section.fadeBetweenSameCategorySlides
+                    : config.slideshow.fadeBetweenSameCategorySlides,
+                section: section,
+                isBlank: true // Flag to indicate this is a blank slide
+            });
+        } else {
+            // Split entries into multiple slides if needed
+            for (let i = 0; i < limitedEntries.length; i += entriesPerSlide) {
+                const slideEntries = limitedEntries.slice(i, i + entriesPerSlide);
+                slides.push({
+                    categoryHeader: section.header,
+                    entries: slideEntries,
+                    duration: section.slideDuration || config.slideshow.defaultSlideDuration,
+                    maxRows: maxRows,
+                    maxColumns: maxColumns,
+                    fadeBetweenSameCategorySlides: section.fadeBetweenSameCategorySlides !== undefined
+                        ? section.fadeBetweenSameCategorySlides
+                        : config.slideshow.fadeBetweenSameCategorySlides,
+                    section: section
+                });
+            }
+        }
+    }
+
+    return slides;
+}
+
+function resetCategoryCSS() {
+    // Reset styles and classes to their CSS defaults
+    const slideshowContainer = document.getElementById('slideshow-container');
+    const slideContent = document.getElementById('slide-content');
+    const categoryHeader = document.getElementById('category-header');
+    const slideGrid = document.getElementById('slide-grid');
+
+    // Helper function to reset classes to their defaults
+    function resetClasses(element, defaultClasses) {
+        if (element) {
+            element.className = defaultClasses;
+        }
+    }
+
+    // Reset classes to their default values
+    resetClasses(slideshowContainer, 'slideshow-container');
+    resetClasses(slideContent, 'slide-content');
+    resetClasses(categoryHeader, 'category-header');
+    resetClasses(slideGrid, 'slide-grid');
+
+    // Remove inline styles to let CSS defaults take effect
+    // Keep only the essential styles that are dynamically set by JavaScript
+    if (slideshowContainer) {
+        const display = slideshowContainer.style.display;
+        const opacity = slideshowContainer.style.opacity;
+        const transition = slideshowContainer.style.transition;
+        slideshowContainer.removeAttribute('style');
+        if (display) slideshowContainer.style.display = display;
+        if (opacity) slideshowContainer.style.opacity = opacity;
+        if (transition) slideshowContainer.style.transition = transition;
+    }
+
+    if (slideContent) {
+        const opacity = slideContent.style.opacity;
+        const transition = slideContent.style.transition;
+        slideContent.removeAttribute('style');
+        if (opacity) slideContent.style.opacity = opacity;
+        if (transition) slideContent.style.transition = transition;
+    }
+
+    if (categoryHeader) {
+        const display = categoryHeader.style.display;
+        categoryHeader.removeAttribute('style');
+        if (display) categoryHeader.style.display = display;
+    }
+
+    if (slideGrid) {
+        const gridTemplateRows = slideGrid.style.gridTemplateRows;
+        const gridTemplateColumns = slideGrid.style.gridTemplateColumns;
+        const gap = slideGrid.style.gap;
+        slideGrid.removeAttribute('style');
+        if (gridTemplateRows) slideGrid.style.gridTemplateRows = gridTemplateRows;
+        if (gridTemplateColumns) slideGrid.style.gridTemplateColumns = gridTemplateColumns;
+        if (gap) slideGrid.style.gap = gap;
+    }
+}
+
+function applyCategoryCSS(section) {
+    // Helper function to apply CSS properties to an element
+    function applyStyles(element, cssObj) {
+        if (!cssObj || typeof cssObj !== 'object') return;
+
+        Object.keys(cssObj).forEach(property => {
+            // Convert camelCase to kebab-case for CSS properties
+            const cssProperty = property.replace(/([A-Z])/g, '-$1').toLowerCase();
+            element.style.setProperty(cssProperty, cssObj[property]);
+        });
+    }
+
+    // Helper function to add CSS classes to an element
+    function addClasses(element, classNames) {
+        if (!classNames || typeof classNames !== 'string') return;
+
+        // Split by spaces and add each class
+        const classes = classNames.trim().split(/\s+/);
+        classes.forEach(className => {
+            if (className) {
+                element.classList.add(className);
+            }
+        });
+    }
+
+    // Get the elements that can be customized
+    const slideshowContainer = document.getElementById('slideshow-container');
+    const slideContent = document.getElementById('slide-content');
+    const categoryHeader = document.getElementById('category-header');
+    const slideGrid = document.getElementById('slide-grid');
+
+    // Apply custom classes first (so CSS properties can override class styles)
+    if (section.containerClass) {
+        addClasses(slideshowContainer, section.containerClass);
+    }
+
+    if (section.contentClass) {
+        addClasses(slideContent, section.contentClass);
+    }
+
+    if (section.headerClass) {
+        addClasses(categoryHeader, section.headerClass);
+    }
+
+    if (section.gridClass) {
+        addClasses(slideGrid, section.gridClass);
+    }
+
+    // Apply custom styles after classes (so CSS properties override class styles)
+    if (section.containerCSS) {
+        applyStyles(slideshowContainer, section.containerCSS);
+    }
+
+    if (section.contentCSS) {
+        applyStyles(slideContent, section.contentCSS);
+    }
+
+    if (section.headerCSS) {
+        applyStyles(categoryHeader, section.headerCSS);
+    }
+
+    if (section.gridCSS) {
+        applyStyles(slideGrid, section.gridCSS);
+    }
+}
+
+async function displaySlide(slide, isCategoryChange = true, isLastSlide = false) {
+    const slideContent = document.getElementById('slide-content');
+    const categoryHeader = document.getElementById('category-header');
+    const slideGrid = document.getElementById('slide-grid');
+
+    // Set dynamic transition durations based on configuration
+    slideContent.style.transition = `opacity ${config.slideshow.fadeOutDuration}ms ease-in-out`;
+    slideGrid.style.transition = `opacity ${config.slideshow.fadeOutDuration}ms ease-in-out`;
+
+    // Determine what should fade based on configuration and slide context
+    const shouldFadeAll = isCategoryChange; // Always fade everything on category change
+    const shouldFadeGridOnly = !isCategoryChange && slide.fadeBetweenSameCategorySlides; // Only fade grid within same category
+
+    // Fade out current content if needed
+    if (shouldFadeAll) {
+        // Fade out entire slide content (header + grid) for category changes
+        slideContent.classList.add('fade-out');
+        await sleep(config.slideshow.fadeOutDuration);
+    } else if (shouldFadeGridOnly) {
+        // Only fade out the grid for same-category transitions
+        slideGrid.classList.add('fade-out');
+        await sleep(config.slideshow.fadeOutDuration);
+    }
+
+    // Reset CSS styles on category change to prevent styles from previous category
+    if (isCategoryChange) {
+        resetCategoryCSS();
+    }
+
+    // Set up new content
+    if (config.slideshow.categoryHeaderEnabled) {
+        categoryHeader.textContent = slide.categoryHeader;
+        categoryHeader.style.display = 'block';
+    } else {
+        categoryHeader.style.display = 'none';
+    }
+
+    slideGrid.innerHTML = '';
+
+    // For blank slides, we don't need to configure the grid layout
+    if (!slide.isBlank) {
+        // Dynamically configure grid layout using CSS properties
+        slideGrid.style.gridTemplateRows = `repeat(${slide.maxRows}, 1fr)`;
+        slideGrid.style.gridTemplateColumns = `repeat(${slide.maxColumns}, 1fr)`;
+
+        // Optional: Adjust gap based on grid size for better spacing
+        const baseGap = 15;
+        const adjustedGap = Math.max(10, baseGap - Math.floor((slide.maxRows + slide.maxColumns) / 4));
+        slideGrid.style.gap = `${adjustedGap}px`;
+    }
+
+    // Apply custom CSS styles for this category if specified
+    applyCategoryCSS(slide.section);
+
+    // Special handling for blank slides to enable true vertical centering
+    if (slide.isBlank) {
+        // Hide the grid completely for blank slides
+        slideGrid.style.display = 'none';
+
+        // For blank slides, if no custom contentCSS is provided, set up perfect centering
+        if (!slide.section.contentCSS) {
+            slideContent.style.justifyContent = 'center';
+            slideContent.style.alignItems = 'center';
+            slideContent.style.display = 'flex';
+            slideContent.style.flexDirection = 'column';
+        }
+
+        // If no custom headerCSS margin is set, remove default margins for better centering
+        if (!slide.section.headerCSS || !slide.section.headerCSS.hasOwnProperty('margin')) {
+            categoryHeader.style.margin = '0';
+        }
+    } else {
+        // Ensure normal layout for non-blank slides
+        slideGrid.style.display = 'grid';
+    }
+
+    // Add entries to grid
+    slide.entries.forEach(entry => {
+        const entryDiv = document.createElement('div');
+        entryDiv.className = 'slide-entry';
+
+        // Use existing HTML templating logic
+        let htmlCode = '{image}<p class="user-display-name">{displayName}</p>';
+        if (slide.section.hasOwnProperty('html')) {
+            htmlCode = slide.section.html;
+        }
+
+        // Handle htmlFunction if specified
+        if (slide.section.hasOwnProperty('htmlFunction')) {
+            if (typeof slide.section.htmlFunction !== 'function') {
+                console.warn(`Section ${slide.section.key} has htmlFunction but it is not a function:`, slide.section.htmlFunction);
+            } else {
+                const evaluatedHtmlCode = slide.section.htmlFunction(entry);
+                if (typeof evaluatedHtmlCode !== 'string') {
+                    console.warn(`Section ${slide.section.key} htmlFunction did not return a string:`, evaluatedHtmlCode);
+                } else {
+                    htmlCode = evaluatedHtmlCode;
+                }
+            }
+        }
+
+        const img = new Image();
+        img.src = entry.profilePicUrl;
+        img.alt = `${entry.username}'s avatar`;
+        img.className = slide.section.imageClass || 'avatar';
+
+        entryDiv.innerHTML = htmlCode
+            .replace('{image}', img.outerHTML)
+            .replace('{displayName}', entry.userDisplayName)
+            .replace('{amount}', entry.amount)
+            .replace('{profilePicUrl}', entry.profilePicUrl)
+            .replace('{username}', entry.username);
+
+        slideGrid.appendChild(entryDiv);
+    });
+
+    // Fade in new content if we faded out
+    if (shouldFadeAll) {
+        // Update transition for fade-in duration
+        slideContent.style.transition = `opacity ${config.slideshow.fadeInDuration}ms ease-in-out`;
+        slideContent.classList.remove('fade-out');
+        // Wait for fade-in to complete
+        await sleep(config.slideshow.fadeInDuration);
+    } else if (shouldFadeGridOnly) {
+        // Update transition for fade-in duration
+        slideGrid.style.transition = `opacity ${config.slideshow.fadeInDuration}ms ease-in-out`;
+        slideGrid.classList.remove('fade-out');
+        // Wait for fade-in to complete
+        await sleep(config.slideshow.fadeInDuration);
+    }
+
+    // Wait for slide duration
+    await sleep(slide.duration);
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
