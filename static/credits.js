@@ -14,18 +14,18 @@ window.onload = async function() {
         return;
     }
 
-    // Ensure slideshow config has defaults for backward compatibility
+    // Ensure slideshow config has defaults
     if (!config.slideshow) {
         config.slideshow = {};
     }
-    if (config.slideshow.defaultMaxRows === undefined) {
-        config.slideshow.defaultMaxRows = 3;
+    if (config.slideshow.maxRows === undefined) {
+        config.slideshow.maxRows = 3;
     }
-    if (config.slideshow.defaultMaxColumns === undefined) {
-        config.slideshow.defaultMaxColumns = 4;
+    if (config.slideshow.maxColumns === undefined) {
+        config.slideshow.maxColumns = 4;
     }
-    if (config.slideshow.defaultSlideDuration === undefined) {
-        config.slideshow.defaultSlideDuration = 5000;
+    if (config.slideshow.slideDuration === undefined) {
+        config.slideshow.slideDuration = 5000;
     }
     if (config.slideshow.fadeOutDuration === undefined) {
         config.slideshow.fadeOutDuration = 500;
@@ -261,7 +261,7 @@ function generateSlides(parsedData) {
         const entries = parsedData[section.key] || [];
 
         // Check if this is a blank slide that should be displayed even with no entries
-        const isBlankSlide = section.isBlankSlide === true;
+        const isBlankSlide = section.slideshow && section.slideshow.isBlankSlide === true;
 
         if (entries.length === 0 && !isBlankSlide) {
             console.log(`Skipping section: ${section.header} (${section.key}: no entries)`);
@@ -275,8 +275,8 @@ function generateSlides(parsedData) {
             console.log(`Applied limit ${section.limit} to section: ${section.header}`);
         }
 
-        const maxRows = section.maxRows || config.slideshow.defaultMaxRows;
-        const maxColumns = section.maxColumns || config.slideshow.defaultMaxColumns;
+        const maxRows = (section.slideshow && section.slideshow.maxRows) || config.slideshow.maxRows;
+        const maxColumns = (section.slideshow && section.slideshow.maxColumns) || config.slideshow.maxColumns;
         const entriesPerSlide = maxRows * maxColumns;
 
         // Handle blank slides (display one slide with no entries)
@@ -285,11 +285,11 @@ function generateSlides(parsedData) {
             slides.push({
                 categoryHeader: section.header,
                 entries: [], // Empty array for blank slide
-                duration: section.slideDuration || config.slideshow.defaultSlideDuration,
+                duration: (section.slideshow && section.slideshow.slideDuration) || config.slideshow.slideDuration,
                 maxRows: maxRows,
                 maxColumns: maxColumns,
-                fadeBetweenSameCategorySlides: section.fadeBetweenSameCategorySlides !== undefined
-                    ? section.fadeBetweenSameCategorySlides
+                fadeBetweenSameCategorySlides: (section.slideshow && section.slideshow.fadeBetweenSameCategorySlides !== undefined)
+                    ? section.slideshow.fadeBetweenSameCategorySlides
                     : config.slideshow.fadeBetweenSameCategorySlides,
                 section: section,
                 isBlank: true // Flag to indicate this is a blank slide
@@ -301,11 +301,11 @@ function generateSlides(parsedData) {
                 slides.push({
                     categoryHeader: section.header,
                     entries: slideEntries,
-                    duration: section.slideDuration || config.slideshow.defaultSlideDuration,
+                    duration: (section.slideshow && section.slideshow.slideDuration) || config.slideshow.slideDuration,
                     maxRows: maxRows,
                     maxColumns: maxColumns,
-                    fadeBetweenSameCategorySlides: section.fadeBetweenSameCategorySlides !== undefined
-                        ? section.fadeBetweenSameCategorySlides
+                    fadeBetweenSameCategorySlides: (section.slideshow && section.slideshow.fadeBetweenSameCategorySlides !== undefined)
+                        ? section.slideshow.fadeBetweenSameCategorySlides
                         : config.slideshow.fadeBetweenSameCategorySlides,
                     section: section
                 });
@@ -405,37 +405,39 @@ function applyCategoryCSS(section) {
     const slideGrid = document.getElementById('slide-grid');
 
     // Apply custom classes first (so CSS properties can override class styles)
-    if (section.containerClass) {
-        addClasses(slideshowContainer, section.containerClass);
+    const slideshow = section.slideshow || {};
+
+    if (slideshow.containerClass) {
+        addClasses(slideshowContainer, slideshow.containerClass);
     }
 
-    if (section.contentClass) {
-        addClasses(slideContent, section.contentClass);
+    if (slideshow.contentClass) {
+        addClasses(slideContent, slideshow.contentClass);
     }
 
-    if (section.headerClass) {
-        addClasses(categoryHeader, section.headerClass);
+    if (slideshow.headerClass) {
+        addClasses(categoryHeader, slideshow.headerClass);
     }
 
-    if (section.gridClass) {
-        addClasses(slideGrid, section.gridClass);
+    if (slideshow.gridClass) {
+        addClasses(slideGrid, slideshow.gridClass);
     }
 
     // Apply custom styles after classes (so CSS properties override class styles)
-    if (section.containerCSS) {
-        applyStyles(slideshowContainer, section.containerCSS);
+    if (slideshow.containerCSS) {
+        applyStyles(slideshowContainer, slideshow.containerCSS);
     }
 
-    if (section.contentCSS) {
-        applyStyles(slideContent, section.contentCSS);
+    if (slideshow.contentCSS) {
+        applyStyles(slideContent, slideshow.contentCSS);
     }
 
-    if (section.headerCSS) {
-        applyStyles(categoryHeader, section.headerCSS);
+    if (slideshow.headerCSS) {
+        applyStyles(categoryHeader, slideshow.headerCSS);
     }
 
-    if (section.gridCSS) {
-        applyStyles(slideGrid, section.gridCSS);
+    if (slideshow.gridCSS) {
+        applyStyles(slideGrid, slideshow.gridCSS);
     }
 }
 
@@ -499,7 +501,8 @@ async function displaySlide(slide, isCategoryChange = true, isLastSlide = false)
         slideGrid.style.display = 'none';
 
         // For blank slides, if no custom contentCSS is provided, set up perfect centering
-        if (!slide.section.contentCSS) {
+        const slideshow = slide.section.slideshow || {};
+        if (!slideshow.contentCSS) {
             slideContent.style.justifyContent = 'center';
             slideContent.style.alignItems = 'center';
             slideContent.style.display = 'flex';
@@ -507,7 +510,7 @@ async function displaySlide(slide, isCategoryChange = true, isLastSlide = false)
         }
 
         // If no custom headerCSS margin is set, remove default margins for better centering
-        if (!slide.section.headerCSS || !slide.section.headerCSS.hasOwnProperty('margin')) {
+        if (!slideshow.headerCSS || !slideshow.headerCSS.hasOwnProperty('margin')) {
             categoryHeader.style.margin = '0';
         }
     } else {

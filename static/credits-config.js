@@ -38,11 +38,11 @@ const config = {
     // - finalFadeOutDuration: Final slideshow disappearance (default: 2000ms)
     "slideshow": {
         // Default time each slide is displayed (milliseconds)
-        "defaultSlideDuration": 5000,
+        "slideDuration": 5000,
         // Default maximum rows per slide
-        "defaultMaxRows": 3,
+        "maxRows": 3,
         // Default maximum columns per slide
-        "defaultMaxColumns": 4,
+        "maxColumns": 4,
         // Duration of fade out transitions between slides (milliseconds)
         "fadeOutDuration": 500,
         // Duration of fade in transitions between slides (milliseconds)
@@ -69,14 +69,14 @@ const config = {
 // Note: If there are no users in a section, that section will be skipped
 // automatically.
 //
-// For slideshow mode, you can add the following optional properties to any section:
+// For slideshow mode, you can add a "slideshow" object to any section with the following properties:
 // - "maxRows": Maximum rows of entries per slide for this section (overrides default)
 // - "maxColumns": Maximum columns of entries per slide for this section (overrides default)
 // - "slideDuration": Time in milliseconds to display each slide for this section (overrides default)
 // - "fadeBetweenSameCategorySlides": Whether to fade between slides within this category (overrides default)
 // - "isBlankSlide": Set to true to display this slide even with no entries (useful for ending slides)
 //
-// CSS Customization (slideshow mode only):
+// CSS Customization (slideshow mode only - within "slideshow" object):
 // Direct CSS Properties:
 // - "containerCSS": Object containing CSS properties for the main slideshow container
 // - "contentCSS": Object containing CSS properties for the slide content wrapper
@@ -102,19 +102,21 @@ const config = {
 // {
 //     "header": "Top Donors",
 //     "key": "donation",
-//     "maxRows": 2,
-//     "maxColumns": 3,
-//     "slideDuration": 8000,
-//     "fadeBetweenSameCategorySlides": false,
-//     "containerClass": "donor-category special-border",
-//     "headerClass": "gold-text large-header",
-//     "containerCSS": {
-//         "backgroundColor": "rgba(255, 100, 100, 0.9)",
-//         "borderColor": "#ff6666"
-//     },
-//     "headerCSS": {
-//         "color": "#ffdd00",
-//         "fontSize": "48px"
+//     "slideshow": {
+//         "maxRows": 2,
+//         "maxColumns": 3,
+//         "slideDuration": 8000,
+//         "fadeBetweenSameCategorySlides": false,
+//         "containerClass": "donor-category special-border",
+//         "headerClass": "gold-text large-header",
+//         "containerCSS": {
+//             "backgroundColor": "rgba(255, 100, 100, 0.9)",
+//             "borderColor": "#ff6666"
+//         },
+//         "headerCSS": {
+//             "color": "#ffdd00",
+//             "fontSize": "48px"
+//         }
 //     }
 // }
 //
@@ -122,15 +124,17 @@ const config = {
 // {
 //     "header": "Thank You!",
 //     "key": "ending",
-//     "isBlankSlide": true,
-//     "slideDuration": 3000,
-//     "containerCSS": {
-//         "backgroundColor": "rgba(0, 0, 0, 0.8)"
-//     },
-//     "headerCSS": {
-//         "fontSize": "64px",
-//         "color": "#ffffff",
-//         "textAlign": "center"
+//     "slideshow": {
+//         "isBlankSlide": true,
+//         "slideDuration": 3000,
+//         "containerCSS": {
+//             "backgroundColor": "rgba(0, 0, 0, 0.8)"
+//         },
+//         "headerCSS": {
+//             "fontSize": "64px",
+//             "color": "#ffffff",
+//             "textAlign": "center"
+//         }
 //     }
 // }
 const sectionsConfig = [
@@ -142,20 +146,22 @@ const sectionsConfig = [
         "header": "Donations and Tips",
         "key": "donation"
         // Example of custom CSS classes and properties for a specific category:
-        // "containerClass": "donation-category premium-border",
-        // "headerClass": "donation-header",
-        // "containerCSS": {
-        //     "backgroundColor": "rgba(255, 215, 0, 0.9)",
-        //     "borderColor": "#ffd700",
-        //     "border": "3px solid #ffd700"
-        // },
-        // "headerCSS": {
-        //     "color": "#8b0000",
-        //     "fontSize": "48px",
-        //     "textShadow": "3px 3px 6px rgba(0, 0, 0, 0.8)"
-        // },
-        // "gridCSS": {
-        //     "gap": "25px"
+        // "slideshow": {
+        //     "containerClass": "donation-category premium-border",
+        //     "headerClass": "donation-header",
+        //     "containerCSS": {
+        //         "backgroundColor": "rgba(255, 215, 0, 0.9)",
+        //         "borderColor": "#ffd700",
+        //         "border": "3px solid #ffd700"
+        //     },
+        //     "headerCSS": {
+        //         "color": "#8b0000",
+        //         "fontSize": "48px",
+        //         "textShadow": "3px 3px 6px rgba(0, 0, 0, 0.8)"
+        //     },
+        //     "gridCSS": {
+        //         "gap": "25px"
+        //     }
         // }
     },
     {
@@ -197,15 +203,17 @@ const sectionsConfig = [
     // {
     //     "header": "Thank You for Watching!",
     //     "key": "ending",
-    //     "isBlankSlide": true,
-    //     "slideDuration": 3000,
-    //     "containerCSS": {
-    //         "backgroundColor": "rgba(50, 50, 50, 0.95)"
-    //     },
-    //     "headerCSS": {
-    //         "fontSize": "48px",
-    //         "color": "#ffffff",
-    //         "textAlign": "center"
+    //     "slideshow": {
+    //         "isBlankSlide": true,
+    //         "slideDuration": 3000,
+    //         "containerCSS": {
+    //             "backgroundColor": "rgba(50, 50, 50, 0.95)"
+    //         },
+    //         "headerCSS": {
+    //             "fontSize": "48px",
+    //             "color": "#ffffff",
+    //             "textAlign": "center"
+    //         }
     //     }
     // }
 ];
