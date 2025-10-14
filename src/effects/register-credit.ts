@@ -238,13 +238,14 @@ class RegisterCreditsEffectController {
                     logger.error(`registerCreditEffect: No username provided for trigger. metadata: ${JSON.stringify(trigger.metadata)}`);
                     return;
                 }
+                const amount = Math.max(forceNumber(trigger.metadata?.eventData?.totalMonths), 1);
                 currentStreamCredits.registerCredit(CreditTypes.SUB, {
                     username: username,
                     userDisplayName: username,
                     profilePicUrl: "",
-                    amount: 0
+                    amount: amount
                 });
-                logger.debug(`Registered subscription from ${eventSourceAndType} for user ${username}.`);
+                logger.debug(`Registered subscription from ${eventSourceAndType} for user ${username} for ${amount} months.`);
                 break;
             }
             case 'mage-kick-integration:chat-message':
