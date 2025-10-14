@@ -8,6 +8,10 @@ https://github.com/user-attachments/assets/8d1f81dd-fc10-41df-9eaf-f689dd18313a
 
 Features:
 
+- Your choice of display style:
+  - Scrolling (as pictured in the video)
+  - Slideshow
+
 - Tracks numerous events including:
   - New followers
   - Subs and re-subs
@@ -42,6 +46,7 @@ Feel free to stop by my Twitch stream (<https://www.twitch.tv/thestaticmage>) wh
 - [Upgrading](/doc/upgrading.md)
 - [Custom credit types](/doc/custom-credits.md)
 - [Display customization](/doc/display-customization.md)
+- [Slideshow mode](/doc/slideshow.md)
 
 ## Support
 
