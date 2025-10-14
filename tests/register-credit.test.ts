@@ -458,7 +458,61 @@ describe('registerCreditsEffectController.onTriggerEvent', () => {
                     username: 'subscriber',
                     userDisplayName: 'subscriber',
                     profilePicUrl: '',
-                    amount: 0
+                    amount: 1
+                }
+            );
+        });
+
+        it('should register Kick subscription event with total months', async () => {
+            const event = {
+                trigger: {
+                    metadata: {
+                        eventSource: { id: 'mage-kick-integration' },
+                        event: { id: 'sub' },
+                        username: 'kicksubscriber',
+                        eventData: {
+                            totalMonths: 6
+                        }
+                    }
+                }
+            };
+
+            await registerCreditsEffectController.onTriggerEvent(event as any);
+
+            expect(mockRegisterCredit).toHaveBeenCalledWith(
+                CreditTypes.SUB,
+                {
+                    username: 'kicksubscriber',
+                    userDisplayName: 'kicksubscriber',
+                    profilePicUrl: '',
+                    amount: 6
+                }
+            );
+        });
+
+        it('should register Twitch subscription event with total months', async () => {
+            const event = {
+                trigger: {
+                    metadata: {
+                        eventSource: { id: 'twitch' },
+                        event: { id: 'sub' },
+                        username: 'subscriber',
+                        eventData: {
+                            totalMonths: 12
+                        }
+                    }
+                }
+            };
+
+            await registerCreditsEffectController.onTriggerEvent(event as any);
+
+            expect(mockRegisterCredit).toHaveBeenCalledWith(
+                CreditTypes.SUB,
+                {
+                    username: 'subscriber',
+                    userDisplayName: 'subscriber',
+                    profilePicUrl: '',
+                    amount: 12
                 }
             );
         });
@@ -482,7 +536,7 @@ describe('registerCreditsEffectController.onTriggerEvent', () => {
                     username: 'kicksubscriber',
                     userDisplayName: 'kicksubscriber',
                     profilePicUrl: '',
-                    amount: 0
+                    amount: 1
                 }
             );
         });
@@ -506,7 +560,88 @@ describe('registerCreditsEffectController.onTriggerEvent', () => {
                     username: 'upgrader',
                     userDisplayName: 'upgrader',
                     profilePicUrl: '',
-                    amount: 0
+                    amount: 1
+                }
+            );
+        });
+
+        it('should register gift sub upgraded event with total months', async () => {
+            const event = {
+                trigger: {
+                    metadata: {
+                        eventSource: { id: 'twitch' },
+                        event: { id: 'gift-sub-upgraded' },
+                        username: 'upgrader',
+                        eventData: {
+                            totalMonths: 24
+                        }
+                    }
+                }
+            };
+
+            await registerCreditsEffectController.onTriggerEvent(event as any);
+
+            expect(mockRegisterCredit).toHaveBeenCalledWith(
+                CreditTypes.SUB,
+                {
+                    username: 'upgrader',
+                    userDisplayName: 'upgrader',
+                    profilePicUrl: '',
+                    amount: 24
+                }
+            );
+        });
+
+        it('should default to 1 month when totalMonths is 0', async () => {
+            const event = {
+                trigger: {
+                    metadata: {
+                        eventSource: { id: 'twitch' },
+                        event: { id: 'sub' },
+                        username: 'newsub',
+                        eventData: {
+                            totalMonths: 0
+                        }
+                    }
+                }
+            };
+
+            await registerCreditsEffectController.onTriggerEvent(event as any);
+
+            expect(mockRegisterCredit).toHaveBeenCalledWith(
+                CreditTypes.SUB,
+                {
+                    username: 'newsub',
+                    userDisplayName: 'newsub',
+                    profilePicUrl: '',
+                    amount: 1
+                }
+            );
+        });
+
+        it('should default to 1 month when totalMonths is negative', async () => {
+            const event = {
+                trigger: {
+                    metadata: {
+                        eventSource: { id: 'twitch' },
+                        event: { id: 'sub' },
+                        username: 'newsub',
+                        eventData: {
+                            totalMonths: -5
+                        }
+                    }
+                }
+            };
+
+            await registerCreditsEffectController.onTriggerEvent(event as any);
+
+            expect(mockRegisterCredit).toHaveBeenCalledWith(
+                CreditTypes.SUB,
+                {
+                    username: 'newsub',
+                    userDisplayName: 'newsub',
+                    profilePicUrl: '',
+                    amount: 1
                 }
             );
         });
