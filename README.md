@@ -73,4 +73,4 @@ If you use this on your stream, I would appreciate a shout-out. (Appreciated, bu
 
 ## Alternatives
 
-This project was inspired by [CaveMobster's firebot-setup-end-credits script](https://github.com/CaveMobster/firebot-setup-end-credits), which implements an end-credits screen entirely with a Firebot setup (and no custom scripting).
+This project was inspired by [CaveMobster's firebot-setup-end-credits script](https://github.com/CaveMobster/firebot-setup-end-credits), which implements an end-credits screen entirely with a Firebot setup (and no custom scripting). See also [@arblane's credits-firebot-setup](https://github.com/arblane/credits-firebot-setup) which achieves the same without a browser source.
