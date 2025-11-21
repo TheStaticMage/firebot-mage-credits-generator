@@ -8,6 +8,15 @@
 
 - A **major release** changes the first number (e.g. `0.1.5` -> `1.0.0`). These releases correspond to a major milestone in the project, and they might contain breaking changes to documented features or things we explicitly broke out for customization. We will have tried our best to warn you of this in advance by deprecating old ways of doing things in previous releases, but this is when we actually "pull the plug." _It is essential that you review the upgrade notes below when upgrading a major version to check for breaking changes and newly deprecated items._
 
+## Version Compatibility
+
+| Plugin Version | Minimum Firebot Version |
+| --- | --- |
+| 1.0.0+ | 5.65 |
+| 0.2.5 and earlier | 5.64 and earlier |
+
+If you have Firebot 5.64 or earlier, you should use version 0.2.5. For Firebot 5.65 and higher, use version 1.0.0 or later.
+
 ## General Upgrade Procedure
 
 1. Review the upgrade notes below, especially if you are upgrading more than just a patch release.
@@ -26,9 +35,9 @@
 
 ## Upgrade Notes
 
-### Version 0.3.x
+### Version 1.0.0
 
-:fire: **Firebot version compatibility**: This plugin now requires Firebot 5.65 or higher. If installed in an earlier version of Firebot, it will raise an error to the user when Firebot starts up. (The reason for this requirement is to leverage [feat: HTTP custom route params](https://github.com/crowbartools/Firebot/commit/39eb2629acc48daf03113db6fb44f5ebf2fe2062).)
+:fire: **Firebot version compatibility**: This plugin now requires Firebot 5.65 or higher. If installed in an earlier version of Firebot, it will raise an error to the user when Firebot starts up.
 
 :boom: **Breaking change to `credits.html` and `credits.js`**: A change was made in [PR#40](https://github.com/TheStaticMage/firebot-mage-credits-generator/pull/40) to how components and data are loaded from the server. This may affect users who have modified `credits.html` or `credits.js` (which we do not directly support modifying). NOTE: This does _not_ expected to affect modifications to `credits.css` (styling of the credits display) or `credits-config.js` (configuring sections and display in the credits). We continue to encourage users to modify the styling and configuration files as they see fit.
 
