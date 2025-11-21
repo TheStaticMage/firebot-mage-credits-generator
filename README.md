@@ -30,10 +30,19 @@ Features:
   - Custom events can be tracked
 
 - Compatibility beyond Firebot:
-  - Combos (with my [firebot-combo-event](https://github.com/TheStaticMage/firebot-combo-event) script and Firebot 5.65+)
-  - Kick events (with my [firebot-mage-kick-integration](https://github.com/TheStaticMage/firebot-mage-kick-integration) script)
+  - Combos (with my [firebot-combo-event](https://github.com/TheStaticMage/firebot-combo-event) plugin)
+  - Kick events (with my [firebot-mage-kick-integration](https://github.com/TheStaticMage/firebot-mage-kick-integration) plugin)
 
 Feel free to stop by my Twitch stream (<https://www.twitch.tv/thestaticmage>) where you will see me roll the credits at the end of every stream.
+
+## Compatibility
+
+| Plugin Version | Minimum Firebot Version |
+| --- | --- |
+| 1.0.0+ | 5.65 |
+| 0.2.5 and earlier | 5.64 and earlier |
+
+If you have Firebot 5.64 or earlier, you should use version 0.2.5. For Firebot 5.65 and higher, use version 1.0.0 or later.
 
 ## Documentation
 
