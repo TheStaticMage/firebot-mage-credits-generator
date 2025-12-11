@@ -69,6 +69,11 @@ const config = {
 // Note: If there are no users in a section, that section will be skipped
 // automatically.
 //
+// Header HTML Rendering (both scroll and slideshow modes):
+// - "allowHeaderHTML": Set to true to render the header text as HTML instead of plain text (default: false)
+//   WARNING: Only enable this if the header contains trusted HTML code. Do not enable this if the header
+//   contains user-supplied data, as it could create a security vulnerability (XSS).
+//
 // For slideshow mode, you can add a "slideshow" object to any section with the following properties:
 // - "maxRows": Maximum rows of entries per slide for this section (overrides default)
 // - "maxColumns": Maximum columns of entries per slide for this section (overrides default)
@@ -136,6 +141,13 @@ const config = {
 //             "textAlign": "center"
 //         }
 //     }
+// }
+//
+// Example section with HTML header (using line breaks and styled text):
+// {
+//     "header": "Thank you!<br><span style=\"font-size: 0.8em; color: #0a0;\">Sub-header here</span>",
+//     "key": "charityDonation",
+//     "allowHeaderHTML": true
 // }
 const sectionsConfig = [
     {

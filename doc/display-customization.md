@@ -57,6 +57,7 @@ The `sectionsConfig` is an Array of the following objects:
 | --- | --- | --- | --- |
 | `key` | String | REQUIRED | Must match with the key name from the credit registration. This will either be one of the built-in keys ('cheer', 'donation', 'extralife', 'existingAllSubs', 'existingFollowers', 'existingGiftedSubs', 'existingGifters', 'existingPaidSubs', 'follow', 'gift', 'moderator', 'raid', 'sub', 'vip') or a [custom credit type](/doc/custom-credits.md). You may append `ByAmount` to any key name to sort by amount (e.g. `giftByAmount`). |
 | `header` | String | REQUIRED | The header as it displays on the credits roll. |
+| `allowHeaderHTML` | Boolean | Optional | Set to `true` to render the header as HTML instead of plain text. This allows you to include line breaks (`<br>`), styled text (`<span style="...">`), and other HTML elements in the header. Default is `false` (headers are escaped). :warning: Only enable this if the header contains trusted HTML code. Do not enable if the header contains user-supplied data. |
 | `durationPerCategory` | Integer | Optional | Override the value of `durationPerCategory` for this section only. This amount will be added to the total duration if any entries are displayed for this section. |
 | `durationPerUser` | Integer | Optional | Override the value of `durationPerUser` as it pertains to counting entries for this section only. (For example, if you are not including images, you don't need as long of a duration since there is less vertical space needed to display only a name.) |
 | `html` | String | Optional | Override the HTML for entries in this section only. You can use any of the placeholders detailed later. |
@@ -139,6 +140,24 @@ const sectionsConfig = [
 ```
 
 :bulb: Any unresolved placeholders in the returned string will be replaced as described in the previous section.
+
+### Customizing section headers with HTML
+
+By default, section headers are displayed as plain text. You can enable HTML rendering for a header by setting `allowHeaderHTML` to `true`. This allows you to include line breaks, styled text, and other HTML elements.
+
+Here is an example of a header with a line break and styled sub-text:
+
+```javascript
+const sectionsConfig = [
+    {
+        "header": "Thank you!<br><span style=\"font-size: 0.8em; color: #0a0;\">Sub-header here</span>",
+        "key": "charityDonation",
+        "allowHeaderHTML": true
+    }
+];
+```
+
+:warning: Only enable `allowHeaderHTML` for headers that contain trusted HTML code. Do not enable this for headers with user-supplied data, as it could create a security vulnerability (XSS).
 
 ## Customizing the visuals (`credits.css`)
 
