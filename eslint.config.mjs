@@ -7,7 +7,7 @@ import stylistic from '@stylistic/eslint-plugin';
 export default tseslint.config(
   eslint.configs.recommended,
   {
-    ignores: ['**/*.mjs', 'webpack.config.js', 'jest.config.js', 'scripts/**', 'dist/**', 'node_modules/**', 'static/**'],
+    ignores: ['**/*.mjs', 'webpack.config.js', 'jest.config.js', 'scripts/**', 'dist/**', 'node_modules/**', 'static/**', 'browser-source-files/**'],
   },
   {
     files: ['**/*.ts', '**/*.tsx'],

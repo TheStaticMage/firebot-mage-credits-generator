@@ -143,7 +143,11 @@ const sectionsConfig = [
         "key": "cheer"
     },
     {
-        "header": "Donations and Tips",
+        "header": "Charity Donations",
+        "key": "charityDonation"
+    },
+    {
+        "header": "Tips",
         "key": "donation"
         // Example of custom CSS classes and properties for a specific category:
         // "slideshow": {

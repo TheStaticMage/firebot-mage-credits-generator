@@ -1,7 +1,7 @@
 {
     "name": "mage-credits-generator",
     "scriptOutputName": "mage-credits-generator",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Effects and variables to generate rolling credits on screen",
     "main": "",
     "scripts": {
@@ -11,6 +11,7 @@
         "build:webpack": "webpack",
         "copy": "node ./scripts/copy-build.js",
         "prepare": "",
+        "lint": "eslint .",
         "test": "jest",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage"

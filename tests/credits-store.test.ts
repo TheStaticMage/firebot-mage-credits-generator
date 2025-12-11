@@ -28,9 +28,9 @@ describe('CreditsStore', () => {
             });
         });
 
-        it('should initialize exactly 9 built-in credit types', () => {
+        it('should initialize exactly 10 built-in credit types', () => {
             const keys = creditsStore.getCreditKeys();
-            expect(keys).toHaveLength(9);
+            expect(keys).toHaveLength(10);
         });
     });
 
@@ -284,7 +284,7 @@ describe('CreditsStore', () => {
             creditsStore.registerCustomCredit('birthday', customUser);
 
             // Verify state
-            expect(creditsStore.getCreditKeys()).toHaveLength(10); // 9 built-in + 1 custom
+            expect(creditsStore.getCreditKeys()).toHaveLength(11); // 10 built-in + 1 custom
             expect(creditsStore.getCreditsForType(CreditTypes.CHEER)).toHaveLength(1);
             expect(creditsStore.getCreditsForType('birthday')).toHaveLength(1);
 

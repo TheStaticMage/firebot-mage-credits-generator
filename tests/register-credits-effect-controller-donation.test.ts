@@ -21,6 +21,169 @@ import { registerCreditsEffectController } from '../src/effects/register-credit'
 import { currentStreamCredits } from '../src/credits-store';
 import { CreditTypes } from '../src/types';
 
+describe('RegisterCreditsEffectController.onTriggerEvent - Twitch Charity Donation', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        // Clear all credits before each test
+        currentStreamCredits.clearAllCredits();
+    });
+
+    it('should register charity donation event with username and display name', async () => {
+        const event = {
+            effect: {},
+            trigger: {
+                metadata: {
+                    eventSource: { id: 'twitch' },
+                    event: { id: 'charity-donation' },
+                    username: 'charitydonor',
+                    eventData: {
+                        userDisplayName: 'CharityDonor',
+                        donationAmount: 50.00
+                    }
+                }
+            },
+            sendDataToOverlay: jest.fn(),
+            outputs: {},
+            abortSignal: new AbortController().signal
+        };
+
+        // Execute the method under test
+        await registerCreditsEffectController.onTriggerEvent(event as any);
+
+        // Verify that the credit can be retrieved via getCreditsForType
+        const retrievedCredits = currentStreamCredits.getCreditsForType(CreditTypes.CHARITY_DONATION);
+        expect(retrievedCredits).not.toBeNull();
+        expect(retrievedCredits).toHaveLength(1);
+
+        if (retrievedCredits) {
+            expect(retrievedCredits[0]).toEqual({
+                username: 'charitydonor',
+                amount: 50.00,
+                userDisplayName: 'CharityDonor',
+                profilePicUrl: ''
+            });
+        }
+    });
+
+    it('should register charity donation using username as fallback for display name', async () => {
+        const event = {
+            effect: {},
+            trigger: {
+                metadata: {
+                    eventSource: { id: 'twitch' },
+                    event: { id: 'charity-donation' },
+                    username: 'charitydonor',
+                    eventData: {
+                        donationAmount: 25.00
+                        // userDisplayName is missing, should use username
+                    }
+                }
+            },
+            sendDataToOverlay: jest.fn(),
+            outputs: {},
+            abortSignal: new AbortController().signal
+        };
+
+        // Execute the method under test
+        await registerCreditsEffectController.onTriggerEvent(event as any);
+
+        // Verify that the credit can be retrieved via getCreditsForType
+        const retrievedCredits = currentStreamCredits.getCreditsForType(CreditTypes.CHARITY_DONATION);
+        expect(retrievedCredits).not.toBeNull();
+        expect(retrievedCredits).toHaveLength(1);
+
+        if (retrievedCredits) {
+            expect(retrievedCredits[0]).toEqual({
+                username: 'charitydonor',
+                amount: 25.00,
+                userDisplayName: 'charitydonor',
+                profilePicUrl: ''
+            });
+        }
+    });
+
+    it('should not register charity donation with missing username', async () => {
+        const event = {
+            effect: {},
+            trigger: {
+                metadata: {
+                    eventSource: { id: 'twitch' },
+                    event: { id: 'charity-donation' },
+                    // username is missing
+                    eventData: {
+                        userDisplayName: 'CharityDonor',
+                        donationAmount: 50.00
+                    }
+                }
+            },
+            sendDataToOverlay: jest.fn(),
+            outputs: {},
+            abortSignal: new AbortController().signal
+        };
+
+        // Execute the method under test
+        await registerCreditsEffectController.onTriggerEvent(event as any);
+
+        // Verify that no credit was registered
+        const retrievedCredits = currentStreamCredits.getCreditsForType(CreditTypes.CHARITY_DONATION);
+        expect(retrievedCredits).toEqual([]);
+    });
+
+    it('should not register charity donation with invalid amount', async () => {
+        const event = {
+            effect: {},
+            trigger: {
+                metadata: {
+                    eventSource: { id: 'twitch' },
+                    event: { id: 'charity-donation' },
+                    username: 'charitydonor',
+                    eventData: {
+                        userDisplayName: 'CharityDonor',
+                        donationAmount: 'invalid'
+                    }
+                }
+            },
+            sendDataToOverlay: jest.fn(),
+            outputs: {},
+            abortSignal: new AbortController().signal
+        };
+
+        // Execute the method under test
+        await registerCreditsEffectController.onTriggerEvent(event as any);
+
+        // Verify that no credit was registered
+        const retrievedCredits = currentStreamCredits.getCreditsForType(CreditTypes.CHARITY_DONATION);
+        expect(retrievedCredits).toEqual([]);
+    });
+
+    it('should not register charity donation with missing amount', async () => {
+        const event = {
+            effect: {},
+            trigger: {
+                metadata: {
+                    eventSource: { id: 'twitch' },
+                    event: { id: 'charity-donation' },
+                    username: 'charitydonor',
+                    eventData: {
+                        userDisplayName: 'CharityDonor'
+                        // donationAmount is missing
+                    }
+                }
+            },
+            sendDataToOverlay: jest.fn(),
+            outputs: {},
+            abortSignal: new AbortController().signal
+        };
+
+        // Execute the method under test
+        await registerCreditsEffectController.onTriggerEvent(event as any);
+
+        // Verify that no credit was registered
+        const retrievedCredits = currentStreamCredits.getCreditsForType(CreditTypes.CHARITY_DONATION);
+        expect(retrievedCredits).toEqual([]);
+    });
+});
+
 describe('RegisterCreditsEffectController.onTriggerEvent - StreamElements Donation', () => {
     beforeEach(() => {
         jest.clearAllMocks();
