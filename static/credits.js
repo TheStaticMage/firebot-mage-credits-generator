@@ -117,7 +117,11 @@ async function runScrollMode(parsedData) {
         const sectionDiv = document.createElement('div');
 
         const header = document.createElement('h2');
-        header.textContent = section.header;
+        if (section.allowHeaderHTML === true) {
+            header.innerHTML = section.header;
+        } else {
+            header.textContent = section.header;
+        }
         sectionDiv.appendChild(header);
 
         for (const entry of entries) {
@@ -472,7 +476,11 @@ async function displaySlide(slide, isCategoryChange = true, isLastSlide = false)
 
     // Set up new content
     if (config.slideshow.categoryHeaderEnabled) {
-        categoryHeader.textContent = slide.categoryHeader;
+        if (slide.section && slide.section.allowHeaderHTML === true) {
+            categoryHeader.innerHTML = slide.categoryHeader;
+        } else {
+            categoryHeader.textContent = slide.categoryHeader;
+        }
         categoryHeader.style.display = 'block';
     } else {
         categoryHeader.style.display = 'none';
