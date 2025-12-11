@@ -12,10 +12,11 @@ triggers["event"] = [
     'combo-event:bits-combo', // https://github.com/TheStaticMage/firebot-combo-event
     'mage-kick-integration:kicks-gifted', // Kicks, like bits
     // 'extralife:donation', TODO support in future
-    'streamelements:donation',
+    'streamelements:donation', // This is a tip not a donation in the traditional sense
     // 'streamlabs:donation', TODO support in future
     // 'streamlabs:eldonation', TODO support in future
     // 'TipeeeStream:donation', TODO support in future
+    'twitch:charity-donation',
     'mage-kick-integration:follow',
     'twitch:follow',
     // 'streamelements:follow', TODO support in future
@@ -167,6 +168,30 @@ class RegisterCreditsEffectController {
                     profilePicUrl: profilePicUrl
                 });
                 logger.debug(`Registered donation/tip from ${eventSourceAndType} for donor ${donor} (${forceNumber(donationAmount)}).`);
+                break;
+            }
+            case 'twitch:charity-donation': {
+                const username = trigger.metadata?.username;
+                if (!username) {
+                    logger.error(`registerCreditEffect: No username provided for charity donation. metadata: ${JSON.stringify(trigger.metadata)}`);
+                    return;
+                }
+
+                const donationAmount = trigger.metadata?.eventData?.donationAmount;
+                if (donationAmount == null || isNaN(Number(donationAmount))) {
+                    logger.error(`registerCreditEffect: No donationAmount provided in the event data for charity donation. metadata: ${JSON.stringify(trigger.metadata)}`);
+                    return;
+                }
+
+                const userDisplayName = trigger.metadata?.eventData?.userDisplayName || username;
+
+                currentStreamCredits.registerCredit(CreditTypes.CHARITY_DONATION, {
+                    username: username,
+                    amount: forceNumber(donationAmount),
+                    userDisplayName: userDisplayName as string,
+                    profilePicUrl: ""
+                });
+                logger.debug(`Registered charity donation from ${eventSourceAndType} for user ${username} (${forceNumber(donationAmount)}).`);
                 break;
             }
             case 'mage-kick-integration:follow':

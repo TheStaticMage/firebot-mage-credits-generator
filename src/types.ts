@@ -6,6 +6,7 @@ export interface Parameters {
 
 export enum CreditTypes {
     CHEER = "cheer",
+    CHARITY_DONATION = "charityDonation",
     DONATION = "donation",
     EXTRALIFE = "extralife",
     FOLLOW = "follow",
@@ -25,6 +26,7 @@ export interface CreditedUser {
 
 export interface CurrentStreamCredits {
     [CreditTypes.CHEER]: CreditedUser[];
+    [CreditTypes.CHARITY_DONATION]: CreditedUser[];
     [CreditTypes.DONATION]: CreditedUser[];
     [CreditTypes.EXTRALIFE]: CreditedUser[];
     [CreditTypes.FOLLOW]: CreditedUser[];
