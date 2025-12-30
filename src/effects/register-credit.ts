@@ -103,7 +103,7 @@ class RegisterCreditsEffectController {
                     username: username,
                     amount: forceNumber(trigger.metadata?.eventData?.bits),
                     userDisplayName: username,
-                    profilePicUrl: ""
+                    profilePicUrl: (trigger.metadata?.eventData?.profilePicUrl as string) || ""
                 });
                 logger.debug(`Registered cheer from ${eventSourceAndType} for user ${username} (${forceNumber(trigger.metadata?.eventData?.bits)}).`);
                 break;
@@ -130,7 +130,7 @@ class RegisterCreditsEffectController {
                     username: username,
                     amount: forceNumber(bits),
                     userDisplayName: username,
-                    profilePicUrl: ""
+                    profilePicUrl: (trigger.metadata?.eventData?.profilePicUrl as string) || ""
                 });
                 logger.debug(`Registered bits powerup event from ${eventSourceAndType} for user ${username} (${forceNumber(bits)}).`);
                 break;
@@ -191,7 +191,7 @@ class RegisterCreditsEffectController {
                     username: username,
                     amount: forceNumber(donationAmount),
                     userDisplayName: userDisplayName as string,
-                    profilePicUrl: ""
+                    profilePicUrl: (trigger.metadata?.eventData?.profilePicUrl as string) || ""
                 });
                 logger.debug(`Registered charity donation from ${eventSourceAndType} for user ${username} (${forceNumber(donationAmount)}).`);
                 break;
@@ -234,7 +234,7 @@ class RegisterCreditsEffectController {
                 currentStreamCredits.registerCredit(CreditTypes.GIFT, {
                     username: username,
                     userDisplayName: username,
-                    profilePicUrl: "",
+                    profilePicUrl: (trigger.metadata?.eventData?.profilePicUrl as string) || "",
                     amount: forceNumber(trigger.metadata?.eventData?.subCount || 1)
                 });
                 logger.debug(`Registered subs gifted from ${eventSourceAndType} for user ${username} (${forceNumber(trigger.metadata?.eventData?.subCount || 1)}).`);
@@ -251,7 +251,7 @@ class RegisterCreditsEffectController {
                 currentStreamCredits.registerCredit(CreditTypes.RAID, {
                     username: username,
                     userDisplayName: username,
-                    profilePicUrl: "",
+                    profilePicUrl: (trigger.metadata?.eventData?.profilePicUrl as string) || "",
                     amount: forceNumber(trigger.metadata?.eventData?.viewerCount)
                 });
                 logger.debug(`Registered raid from ${eventSourceAndType} for user ${username} (${forceNumber(trigger.metadata?.eventData?.viewerCount)}).`);
@@ -269,7 +269,7 @@ class RegisterCreditsEffectController {
                 currentStreamCredits.registerCredit(CreditTypes.SUB, {
                     username: username,
                     userDisplayName: username,
-                    profilePicUrl: "",
+                    profilePicUrl: (trigger.metadata?.eventData?.profilePicUrl as string) || "",
                     amount: amount
                 });
                 logger.debug(`Registered subscription from ${eventSourceAndType} for user ${username} for ${amount} months.`);
