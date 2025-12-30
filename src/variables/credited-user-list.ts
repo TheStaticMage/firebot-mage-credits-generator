@@ -1,11 +1,12 @@
 import { ReplaceVariable } from '@crowbartools/firebot-custom-scripts-types/types/modules/replace-variable-manager';
 import { currentStreamCredits } from '../credits-store';
 import { firebot, logger } from '../main';
+import { profilePictureCache } from '../profile-picture-cache';
 import { getFollowers } from '../twitch-api/followers';
 import { getAllSubscribers, getGiftedSubscribers, getGifters, getPaidSubscribers } from '../twitch-api/subscribers';
 import { CreditedUser, CreditTypes, existingCategories } from '../types';
 
-const viewerDbCache: Record<string, CreditedUser> = {};
+let viewerDbCache: Record<string, CreditedUser> = {};
 
 export const creditedUserList: ReplaceVariable = {
     definition: {
@@ -188,22 +189,15 @@ export const creditedUserListJSON: ReplaceVariable = {
                 const userObjects = await Promise.all(users.map((entry: CreditedUser) => getUserObject(entry)));
                 const result = userObjects.filter((entry): entry is NonNullable<typeof entry> => entry !== undefined);
 
-                // Twitch seems to have an inferiority complex or insecurity
-                // about their competitor Kick, but I won't want anyone to get
-                // banned on my account for showing the Kick logo on a Twitch
-                // stream. But this workaround is Kick's fault anyway, since
-                // their profile picture URLs are broken
-                // (https://github.com/KickEngineering/KickDevDocs/issues/166)
-                // so we will replace it with a Twitch default profile picture.
                 for (const entry of result) {
+                    // Always overwrite profile picture with authoritative source
+                    entry.profilePicUrl = await profilePictureCache.getProfilePictureWithFallback(entry.username);
+
                     if (/@/.test(entry.username)) {
                         entry.username = entry.username.replace(/@.*$/g, '');
                     }
                     if (/@/.test(entry.userDisplayName || '')) {
                         entry.userDisplayName = (entry.userDisplayName || '').replace(/@.*$/g, '');
-                    }
-                    if (entry.profilePicUrl === "https://kick.com/favicon.ico" || entry.profilePicUrl === "") {
-                        entry.profilePicUrl = "https://static-cdn.jtvnw.net/user-default-pictures-uv/ead5c8b2-a4c9-4724-b1dd-9f00b46cbd3d-profile_image-300x300.png";
                     }
                 }
 
@@ -220,6 +214,10 @@ export const creditedUserListJSON: ReplaceVariable = {
         return JSON.stringify(results, null, 2);
     }
 };
+
+export function resetViewerDbCache(): void {
+    viewerDbCache = {};
+}
 
 function collectAndSort(entries: CreditedUser[], category: string): CreditedUser[] {
     if (!entries || entries.length === 0) {

@@ -1,6 +1,15 @@
 import { CreditsStore } from '../src/credits-store';
 import { CreditedUser, CreditTypes } from '../src/types';
 
+jest.mock('../src/profile-picture-cache', () => ({
+    profilePictureCache: {
+        updateProfilePicture: jest.fn(),
+        getProfilePicture: jest.fn(),
+        clearCache: jest.fn(),
+        getProfilePictureWithFallback: jest.fn()
+    }
+}));
+
 describe('CreditsStore blocking and clearing', () => {
     let store: CreditsStore;
     const userA: CreditedUser = { username: 'Alice', userDisplayName: 'Alice', profilePicUrl: '', amount: 1 };
