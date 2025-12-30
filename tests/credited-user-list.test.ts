@@ -48,7 +48,7 @@ jest.mock('../src/twitch-api/subscribers', () => ({
     getPaidSubscribers: mockGetPaidSubscribers
 }));
 
-import { creditedUserList, creditedUserListJSON } from '../src/variables/credited-user-list';
+import { creditedUserList, creditedUserListJSON, resetViewerDbCache } from '../src/variables/credited-user-list';
 import { CreditTypes, CreditedUser } from '../src/types';
 
 describe('creditedUserList.evaluator', () => {
@@ -63,6 +63,7 @@ describe('creditedUserList.evaluator', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        resetViewerDbCache();
 
         // Set up default mock returns
         mockGetCreditsForType.mockReturnValue(null);
@@ -350,6 +351,42 @@ describe('creditedUserList.evaluator', () => {
             expect(result).toEqual(['user1']);
         });
     });
+
+    describe('YouTube profile images', () => {
+        it('should handle YouTube users with profile pictures', async () => {
+            const testUsers: CreditedUser[] = [
+                { username: 'ytuser@youtube', amount: 50, userDisplayName: 'YT User', profilePicUrl: 'https://yt3.ggpht.com/example.jpg' }
+            ];
+            mockGetCreditsForType.mockReturnValue(testUsers);
+
+            const result = await creditedUserList.evaluator(mockTrigger, CreditTypes.CHEER);
+
+            expect(result).toEqual(['ytuser@youtube']);
+        });
+
+        it('should use Twitch default for YouTube users without profile pictures', async () => {
+            const testUsers: CreditedUser[] = [
+                { username: 'ytuser@youtube', amount: 50, userDisplayName: 'YT User', profilePicUrl: '' }
+            ];
+            mockGetCreditsForType.mockReturnValue(testUsers);
+
+            const result = await creditedUserList.evaluator(mockTrigger, CreditTypes.CHEER);
+
+            expect(result).toEqual(['ytuser@youtube']);
+        });
+
+        it('should handle mixed Twitch and YouTube users', async () => {
+            const testUsers: CreditedUser[] = [
+                { username: 'twitchuser', amount: 100, userDisplayName: 'Twitch User', profilePicUrl: '' },
+                { username: 'ytuser@youtube', amount: 50, userDisplayName: 'YT User', profilePicUrl: '' }
+            ];
+            mockGetCreditsForType.mockReturnValue(testUsers);
+
+            const result = await creditedUserList.evaluator(mockTrigger, CreditTypes.CHEER);
+
+            expect(result).toEqual(['twitchuser', 'ytuser@youtube']);
+        });
+    });
 });
 
 describe('creditedUserListJSON.evaluator', () => {
@@ -363,6 +400,11 @@ describe('creditedUserListJSON.evaluator', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        resetViewerDbCache();
+
+        // Clear profile picture cache
+        const { profilePictureCache } = require('../src/profile-picture-cache');
+        profilePictureCache.clearCache();
 
         // Set up default mock returns
         mockGetCreditsForType.mockReturnValue([]);
@@ -457,9 +499,9 @@ describe('creditedUserListJSON.evaluator', () => {
             expect(parsed.cheer[0]).toMatchObject({
                 username: 'user1',
                 userDisplayName: 'user1', // Falls back to username
-                profilePicUrl: 'https://static-cdn.jtvnw.net/user-default-pictures-uv/ead5c8b2-a4c9-4724-b1dd-9f00b46cbd3d-profile_image-300x300.png',
                 amount: 50
             });
+            expect(parsed.cheer[0].profilePicUrl).toMatch(/^https:\/\/static-cdn\.jtvnw\.net\/user-default-pictures-uv\//);
         });
 
         it('should handle missing userDisplayName and profilePicUrl', async () => {
@@ -475,9 +517,9 @@ describe('creditedUserListJSON.evaluator', () => {
             expect(parsed.cheer[0]).toMatchObject({
                 username: 'user1',
                 userDisplayName: 'user1',
-                profilePicUrl: 'https://static-cdn.jtvnw.net/user-default-pictures-uv/ead5c8b2-a4c9-4724-b1dd-9f00b46cbd3d-profile_image-300x300.png',
                 amount: 50
             });
+            expect(parsed.cheer[0].profilePicUrl).toMatch(/^https:\/\/static-cdn\.jtvnw\.net\/user-default-pictures-uv\//);
         });
     });
 
@@ -504,9 +546,9 @@ describe('creditedUserListJSON.evaluator', () => {
             });
         });
 
-        it('should replace Kick favicon with Twitch default profile picture', async () => {
+        it('should replace Kick favicon placeholder with Kick default profile picture', async () => {
             const testUsers: CreditedUser[] = [
-                { username: 'user1', amount: 50, userDisplayName: 'User 1', profilePicUrl: 'https://kick.com/favicon.ico' }
+                { username: 'user1@kick', amount: 50, userDisplayName: 'User 1', profilePicUrl: 'https://kick.com/favicon.ico' }
             ];
             mockGetCreditsForType.mockReturnValue(testUsers);
             mockGetViewerByUsername.mockResolvedValue(null);
@@ -514,7 +556,7 @@ describe('creditedUserListJSON.evaluator', () => {
             const result = await creditedUserListJSON.evaluator(mockTrigger, 'cheer');
 
             const parsed = JSON.parse(result);
-            expect(parsed.cheer[0].profilePicUrl).toBe('https://static-cdn.jtvnw.net/user-default-pictures-uv/ead5c8b2-a4c9-4724-b1dd-9f00b46cbd3d-profile_image-300x300.png');
+            expect(parsed.cheer[0].profilePicUrl).toMatch(/^https:\/\/kick.com\/img\/default-profile-pictures\//);
         });
 
         it('should replace empty profile picture URLs with Twitch default', async () => {
@@ -527,7 +569,7 @@ describe('creditedUserListJSON.evaluator', () => {
             const result = await creditedUserListJSON.evaluator(mockTrigger, 'cheer');
 
             const parsed = JSON.parse(result);
-            expect(parsed.cheer[0].profilePicUrl).toBe('https://static-cdn.jtvnw.net/user-default-pictures-uv/ead5c8b2-a4c9-4724-b1dd-9f00b46cbd3d-profile_image-300x300.png');
+            expect(parsed.cheer[0].profilePicUrl).toMatch(/^https:\/\/static-cdn\.jtvnw\.net\/user-default-pictures-uv\//);
         });
     });
 

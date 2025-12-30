@@ -1,3 +1,4 @@
+import { profilePictureCache } from './profile-picture-cache';
 import { CreditedUser, CreditTypes, CurrentStreamCredits } from './types';
 
 export class CreditsStore {
@@ -36,6 +37,11 @@ export class CreditsStore {
      * @returns true if successful, false if the built-in event type is invalid
      */
     registerCredit(eventType: string, creditedUser: CreditedUser): boolean {
+        // Update profile picture cache if available
+        if (creditedUser.profilePicUrl) {
+            profilePictureCache.updateProfilePicture(creditedUser.username, creditedUser.profilePicUrl);
+        }
+
         // Check if it's a built-in credit type
         const builtInTypes = Object.values(CreditTypes) as string[];
         if (builtInTypes.includes(eventType)) {
@@ -48,6 +54,11 @@ export class CreditsStore {
     }
 
     registerCustomCredit(eventType: string, creditedUser: CreditedUser) {
+        // Update profile picture cache if available
+        if (creditedUser.profilePicUrl) {
+            profilePictureCache.updateProfilePicture(creditedUser.username, creditedUser.profilePicUrl);
+        }
+
         if (!this.data[eventType]) {
             this.data[eventType] = [];
         }

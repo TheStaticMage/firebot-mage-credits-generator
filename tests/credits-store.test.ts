@@ -1,6 +1,15 @@
 import { CreditsStore } from '../src/credits-store';
 import { CreditTypes, CreditedUser } from '../src/types';
 
+jest.mock('../src/profile-picture-cache', () => ({
+    profilePictureCache: {
+        updateProfilePicture: jest.fn(),
+        getProfilePicture: jest.fn(),
+        clearCache: jest.fn(),
+        getProfilePictureWithFallback: jest.fn()
+    }
+}));
+
 describe('CreditsStore', () => {
     let creditsStore: CreditsStore;
 
