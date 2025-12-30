@@ -32,6 +32,8 @@ triggers["event"] = [
     'twitch:gift-sub-upgraded',
     'mage-kick-integration:chat-message',
     'mage-kick-integration:viewer-arrived',
+    'mage-youtube-integration:chat-message',
+    'mage-youtube-integration:viewer-arrived',
     'twitch:chat-message',
     'twitch:viewer-arrived',
     "twitch:bits-powerup-message-effect",
@@ -275,11 +277,13 @@ class RegisterCreditsEffectController {
             }
             case 'mage-kick-integration:chat-message':
             case 'mage-kick-integration:viewer-arrived':
+            case 'mage-youtube-integration:chat-message':
+            case 'mage-youtube-integration:viewer-arrived':
             case 'twitch:chat-message':
             case 'twitch:viewer-arrived': {
                 const metadata = trigger.metadata;
                 if (!metadata || !metadata.eventData || !metadata.eventData.chatMessage) {
-                    logger.error(`registerCreditEffect: Missing metadata for Kick viewer-arrived event.`);
+                    logger.error(`registerCreditEffect: Missing metadata for viewer-arrived event.`);
                     return;
                 }
 
@@ -314,6 +318,11 @@ class RegisterCreditsEffectController {
                 if (eventSource === 'mage-kick-integration') {
                     userEntry.username = chatMessage.username.endsWith("@kick") ? chatMessage.username : `${chatMessage.username}@kick`;
                     userEntry.userDisplayName = chatMessage.userDisplayName || userEntry.username.substring(0, userEntry.username.length - 5);
+                }
+
+                if (eventSource === 'mage-youtube-integration') {
+                    userEntry.username = chatMessage.username.endsWith("@youtube") ? chatMessage.username : `${chatMessage.username}@youtube`;
+                    userEntry.userDisplayName = chatMessage.userDisplayName || userEntry.username.substring(0, userEntry.username.length - 8);
                 }
 
                 if (chatMessage.roles.includes('vip') || chatMessage.isVip) {
