@@ -44,6 +44,7 @@ export const registerCreditManualEffect: Firebot.EffectType<registerCreditManual
     `,
     optionsController: ($scope: any) => {
         $scope.eventTypes = {
+            "charityDonation": "Charity donation",
             "cheer": "Cheered",
             "donation": "Donated/Tipped",
             "extralife": "Extralife donation",
