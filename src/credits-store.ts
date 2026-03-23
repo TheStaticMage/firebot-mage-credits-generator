@@ -3,8 +3,8 @@ import { CreditedUser, CreditTypes, CurrentStreamCredits } from './types';
 
 export class CreditsStore {
     private data: CurrentStreamCredits = {
-        [CreditTypes.CHEER]: new Array<CreditedUser>(),
         [CreditTypes.CHARITY_DONATION]: new Array<CreditedUser>(),
+        [CreditTypes.CHEER]: new Array<CreditedUser>(),
         [CreditTypes.DONATION]: new Array<CreditedUser>(),
         [CreditTypes.EXTRALIFE]: new Array<CreditedUser>(),
         [CreditTypes.FOLLOW]: new Array<CreditedUser>(),
