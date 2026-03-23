@@ -4,7 +4,7 @@
 
 This is a script that helps with an "end credits" display for [Firebot](https://firebot.app/) (the all-in-one bot for Twitch streamers).
 
-https://github.com/user-attachments/assets/8d1f81dd-fc10-41df-9eaf-f689dd18313a
+<https://github.com/user-attachments/assets/8d1f81dd-fc10-41df-9eaf-f689dd18313a>
 
 Features:
 
@@ -30,7 +30,6 @@ Features:
   - Custom events can be tracked
 
 - Compatibility beyond Firebot:
-  - Combos (with my [firebot-combo-event](https://github.com/TheStaticMage/firebot-combo-event) plugin)
   - Kick events (with my [firebot-mage-kick-integration](https://github.com/TheStaticMage/firebot-mage-kick-integration) plugin)
 
 Feel free to stop by my Twitch stream (<https://www.twitch.tv/thestaticmage>) where you will see me roll the credits at the end of every stream.

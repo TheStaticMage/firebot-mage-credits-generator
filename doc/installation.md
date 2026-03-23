@@ -80,8 +80,6 @@ Add this effect to any of the following events that you want to track with the c
 - Sub Gifted (Twitch) - _Gifting a sub credits the gifter_
 - Viewer Arrived (Twitch) - _This is used for VIP and Moderator recognition_
 
-If you are using my [Twitch combo support script](https://github.com/TheStaticMage/firebot-combo-event), you can add this effect to the "Combo" event.
-
 If you are using my [Kick integration](https://github.com/TheStaticMage/firebot-mage-kick-integration), you can add this effect to the following Kick events:
 
 - Community Subs Gifted (Kick)
