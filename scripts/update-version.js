@@ -1,7 +1,7 @@
 /**
  *  Copies the built script .js to Firebot's scripts folder
  */
-/** biome-ignore-all lint/style/noCommonJs: <explanation> */
+/** biome-ignore-all lint/style/noCommonJs: This script is executed directly by Node as a CommonJS module and relies on require/__dirname, so we intentionally use CommonJS here. */
 // biome-ignore lint: Requires must be at module level for this CommonJS script
 const fs = require("fs").promises;
 const path = require("path");
