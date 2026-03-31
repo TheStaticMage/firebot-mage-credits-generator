@@ -63,12 +63,12 @@ async function runScrollMode(parsedData) {
 
     let hasPreviousSection = false;
     for (const section of sectionsConfig) {
-        if (!Object.hasOwn(section, "header")) {
+        if (!Object.prototype.hasOwnProperty.call(section, "header")) {
             console.warn('Section is missing required "header" property:', section);
             continue;
         }
 
-        if (!Object.hasOwn(section, "key")) {
+        if (!Object.prototype.hasOwnProperty.call(section, "key")) {
             console.warn('Section is missing required "key" property:', section);
             continue;
         }
@@ -80,27 +80,27 @@ async function runScrollMode(parsedData) {
         }
 
         let htmlCode = '{image}<p class="user-display-name">{displayName}</p>';
-        if (Object.hasOwn(section, "html")) {
+        if (Object.prototype.hasOwnProperty.call(section, "html")) {
             htmlCode = section.html;
         }
 
         let limit = entries.length;
-        if (Object.hasOwn(section, "limit")) {
+        if (Object.prototype.hasOwnProperty.call(section, "limit")) {
             limit = section.limit;
         }
 
         let durationPerUser = config.durationPerUser;
-        if (Object.hasOwn(section, "durationPerUser")) {
+        if (Object.prototype.hasOwnProperty.call(section, "durationPerUser")) {
             durationPerUser = section.durationPerUser;
         }
 
         let durationPerCategory = config.durationPerCategory;
-        if (Object.hasOwn(section, "durationPerCategory")) {
+        if (Object.prototype.hasOwnProperty.call(section, "durationPerCategory")) {
             durationPerCategory = section.durationPerCategory;
         }
 
         let imageClass = "avatar";
-        if (Object.hasOwn(section, "imageClass")) {
+        if (Object.prototype.hasOwnProperty.call(section, "imageClass")) {
             imageClass = section.imageClass;
         }
 
@@ -137,7 +137,7 @@ async function runScrollMode(parsedData) {
             const entryDiv = document.createElement("div");
             entryDiv.className = "entry";
 
-            if (Object.hasOwn(section, "htmlFunction")) {
+            if (Object.prototype.hasOwnProperty.call(section, "htmlFunction")) {
                 if (typeof section.htmlFunction !== "function") {
                     console.warn(`Section ${section.key} has htmlFunction but it is not a function:`, section.htmlFunction);
                 } else {
@@ -252,12 +252,12 @@ function generateSlides(parsedData) {
     const slides = [];
 
     for (const section of sectionsConfig) {
-        if (!Object.hasOwn(section, "header")) {
+        if (!Object.prototype.hasOwnProperty.call(section, "header")) {
             console.warn('Section is missing required "header" property:', section);
             continue;
         }
 
-        if (!Object.hasOwn(section, "key")) {
+        if (!Object.prototype.hasOwnProperty.call(section, "key")) {
             console.warn('Section is missing required "key" property:', section);
             continue;
         }
@@ -274,7 +274,7 @@ function generateSlides(parsedData) {
 
         // Apply limit if specified
         let limitedEntries = entries;
-        if (Object.hasOwn(section, "limit")) {
+        if (Object.prototype.hasOwnProperty.call(section, "limit")) {
             limitedEntries = entries.slice(0, section.limit);
             console.log(`Applied limit ${section.limit} to section: ${section.header}`);
         }
@@ -514,7 +514,7 @@ async function displaySlide(slide, isCategoryChange = true, isLastSlide = false)
         }
 
         // If no custom headerCSS margin is set, remove default margins for better centering
-        if (!slideshow.headerCSS || !Object.hasOwn(slideshow.headerCSS, "margin")) {
+        if (!slideshow.headerCSS || !Object.prototype.hasOwnProperty.call(slideshow.headerCSS, "margin")) {
             categoryHeader.style.margin = "0";
         }
     } else {
@@ -529,12 +529,12 @@ async function displaySlide(slide, isCategoryChange = true, isLastSlide = false)
 
         // Use existing HTML templating logic
         let htmlCode = '{image}<p class="user-display-name">{displayName}</p>';
-        if (Object.hasOwn(slide.section, "html")) {
+        if (Object.prototype.hasOwnProperty.call(slide.section, "html")) {
             htmlCode = slide.section.html;
         }
 
         // Handle htmlFunction if specified
-        if (Object.hasOwn(slide.section, "htmlFunction")) {
+        if (Object.prototype.hasOwnProperty.call(slide.section, "htmlFunction")) {
             if (typeof slide.section.htmlFunction !== "function") {
                 console.warn(`Section ${slide.section.key} has htmlFunction but it is not a function:`, slide.section.htmlFunction);
             } else {
