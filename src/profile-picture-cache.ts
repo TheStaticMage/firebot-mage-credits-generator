@@ -8,7 +8,6 @@ function getTwitchDefaultProfilePic(): string {
         "ebb84563-db81-4b9c-8940-64ed33ccfc7b-profile_image-300x300.png", // Green
         "ce57700a-def9-11e9-842d-784f43822e80-profile_image-300x300.png", // Lime
         "75305d54-c7cc-40d1-bb9c-91fbe85943c7-profile_image-300x300.png" // Yellow
-
     ];
     return `https://static-cdn.jtvnw.net/user-default-pictures-uv/${imageIds[Math.floor(Math.random() * imageIds.length)]}`;
 }
@@ -51,7 +50,7 @@ function isValidProfilePicUrl(url: string): boolean {
 type FailedLookupCacheEntry = {
     timestamp: number;
     result: string;
-}
+};
 
 class ProfilePictureCache {
     private cache = new Map<string, string>();
@@ -92,7 +91,7 @@ class ProfilePictureCache {
             const now = Date.now();
             const lastFailedLookup = this.failedLookupCache.get(normalizedUsername);
 
-            if (lastFailedLookup && (now - lastFailedLookup.timestamp) < this.FAILED_LOOKUP_SUPPRESSION_MS) {
+            if (lastFailedLookup && now - lastFailedLookup.timestamp < this.FAILED_LOOKUP_SUPPRESSION_MS) {
                 return lastFailedLookup.result;
             }
 

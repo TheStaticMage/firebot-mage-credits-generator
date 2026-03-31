@@ -4,9 +4,13 @@ import { firebot, logger } from "../main";
 
 // These need to stay as 'require' to allow the embedded static files to be used
 // when the script is run in Firebot.
+// biome-ignore lint/style/noCommonJs: Need to use require for static content in Firebot
 const defaultCss = require("../../static/credits.css");
+// biome-ignore lint/style/noCommonJs: Need to use require for static content in Firebot
 const defaultConfig = require("../../static/credits-config.js");
+// biome-ignore lint/style/noCommonJs: Need to use require for static content in Firebot
 const defaultHtml = require("../../static/credits.html");
+// biome-ignore lint/style/noCommonJs: Need to use require for static content in Firebot
 const defaultScript = require("../../static/credits.js");
 
 type Generation = {
@@ -16,7 +20,7 @@ type Generation = {
     htmlContent: string;
     scriptContent: string;
     jsonData: string;
-}
+};
 
 export class Server {
     private generations = new Map<string, Generation>();
@@ -32,32 +36,32 @@ export class Server {
         const { httpServer } = firebot.modules;
 
         // Legacy endpoint for backward compatibility
-        httpServer.registerCustomRoute('mage-credits-generator', "/credits.html", "GET", async (req: Request, res: Response) => {
+        httpServer.registerCustomRoute("mage-credits-generator", "/credits.html", "GET", async (req: Request, res: Response) => {
             this.handleLegacyCreditsRequest(req, res);
         });
 
         // Component routes with generation ID parameter
-        httpServer.registerCustomRoute('mage-credits-generator', "/:generationId/config.js", "GET", (req: Request, res: Response) => {
+        httpServer.registerCustomRoute("mage-credits-generator", "/:generationId/config.js", "GET", (req: Request, res: Response) => {
             this.handleConfigRequest(req, res);
         });
 
-        httpServer.registerCustomRoute('mage-credits-generator', "/:generationId/style.css", "GET", (req: Request, res: Response) => {
+        httpServer.registerCustomRoute("mage-credits-generator", "/:generationId/style.css", "GET", (req: Request, res: Response) => {
             this.handleStyleRequest(req, res);
         });
 
-        httpServer.registerCustomRoute('mage-credits-generator', "/:generationId/credits.html", "GET", (req: Request, res: Response) => {
+        httpServer.registerCustomRoute("mage-credits-generator", "/:generationId/credits.html", "GET", (req: Request, res: Response) => {
             this.handleHtmlRequest(req, res);
         });
 
-        httpServer.registerCustomRoute('mage-credits-generator', "/:generationId/script.js", "GET", (req: Request, res: Response) => {
+        httpServer.registerCustomRoute("mage-credits-generator", "/:generationId/script.js", "GET", (req: Request, res: Response) => {
             this.handleScriptRequest(req, res);
         });
 
-        httpServer.registerCustomRoute('mage-credits-generator', "/:generationId/data.json", "GET", (req: Request, res: Response) => {
+        httpServer.registerCustomRoute("mage-credits-generator", "/:generationId/data.json", "GET", (req: Request, res: Response) => {
             this.handleDataRequest(req, res);
         });
 
-        httpServer.registerCustomRoute('mage-credits-generator', "/:generationId/complete", "GET", (req: Request, res: Response) => {
+        httpServer.registerCustomRoute("mage-credits-generator", "/:generationId/complete", "GET", (req: Request, res: Response) => {
             this.handleGenerationCompleteRequest(req, res);
         });
 
@@ -76,13 +80,13 @@ export class Server {
         }
 
         const { httpServer } = firebot.modules;
-        httpServer.unregisterCustomRoute('mage-credits-generator', "/credits.html", "GET");
-        httpServer.unregisterCustomRoute('mage-credits-generator', "/:generationId/config.js", "GET");
-        httpServer.unregisterCustomRoute('mage-credits-generator', "/:generationId/style.css", "GET");
-        httpServer.unregisterCustomRoute('mage-credits-generator', "/:generationId/credits.html", "GET");
-        httpServer.unregisterCustomRoute('mage-credits-generator', "/:generationId/script.js", "GET");
-        httpServer.unregisterCustomRoute('mage-credits-generator', "/:generationId/data.json", "GET");
-        httpServer.unregisterCustomRoute('mage-credits-generator', "/:generationId/complete", "GET");
+        httpServer.unregisterCustomRoute("mage-credits-generator", "/credits.html", "GET");
+        httpServer.unregisterCustomRoute("mage-credits-generator", "/:generationId/config.js", "GET");
+        httpServer.unregisterCustomRoute("mage-credits-generator", "/:generationId/style.css", "GET");
+        httpServer.unregisterCustomRoute("mage-credits-generator", "/:generationId/credits.html", "GET");
+        httpServer.unregisterCustomRoute("mage-credits-generator", "/:generationId/script.js", "GET");
+        httpServer.unregisterCustomRoute("mage-credits-generator", "/:generationId/data.json", "GET");
+        httpServer.unregisterCustomRoute("mage-credits-generator", "/:generationId/complete", "GET");
 
         if (this.cleanupInterval) {
             clearInterval(this.cleanupInterval);
@@ -116,7 +120,8 @@ export class Server {
     private cleanupGenerations() {
         const now = Date.now();
         this.generations.forEach((generation, key) => {
-            if (now - generation.timestamp > 60000) { // 1 minute expiration
+            if (now - generation.timestamp > 60000) {
+                // 1 minute expiration
                 this.generations.delete(key);
             }
         });
@@ -131,7 +136,7 @@ export class Server {
             return null;
         }
 
-        let mostRecentId = '';
+        let mostRecentId = "";
         let mostRecentTimestamp = 0;
 
         this.generations.forEach((generation, generationId) => {
@@ -168,7 +173,7 @@ export class Server {
     }
 
     private getGenerationIdFromUrl(url: string): string | null {
-        const parts = url.split('/');
+        const parts = url.split("/");
         if (parts.length >= 2) {
             return parts[parts.length - 2];
         }
@@ -194,52 +199,52 @@ export class Server {
     }
 
     private handleConfigRequest(req: Request, res: Response) {
-        const generation = this.getGenerationFromRequest(req, res, 'handleConfigRequest');
+        const generation = this.getGenerationFromRequest(req, res, "handleConfigRequest");
         if (!generation) {
             return;
         }
 
-        res.setHeader('Content-Type', 'application/javascript');
+        res.setHeader("Content-Type", "application/javascript");
         res.send(generation.configContent);
     }
 
     private handleStyleRequest(req: Request, res: Response) {
-        const generation = this.getGenerationFromRequest(req, res, 'handleStyleRequest');
+        const generation = this.getGenerationFromRequest(req, res, "handleStyleRequest");
         if (!generation) {
             return;
         }
 
-        res.setHeader('Content-Type', 'text/css');
+        res.setHeader("Content-Type", "text/css");
         res.send(generation.cssContent);
     }
 
     private handleHtmlRequest(req: Request, res: Response) {
-        const generation = this.getGenerationFromRequest(req, res, 'handleHtmlRequest');
+        const generation = this.getGenerationFromRequest(req, res, "handleHtmlRequest");
         if (!generation) {
             return;
         }
 
-        res.setHeader('Content-Type', 'text/html');
+        res.setHeader("Content-Type", "text/html");
         res.send(generation.htmlContent);
     }
 
     private handleScriptRequest(req: Request, res: Response) {
-        const generation = this.getGenerationFromRequest(req, res, 'handleScriptRequest');
+        const generation = this.getGenerationFromRequest(req, res, "handleScriptRequest");
         if (!generation) {
             return;
         }
 
-        res.setHeader('Content-Type', 'application/javascript');
+        res.setHeader("Content-Type", "application/javascript");
         res.send(generation.scriptContent);
     }
 
     private handleDataRequest(req: Request, res: Response) {
-        const generation = this.getGenerationFromRequest(req, res, 'handleDataRequest');
+        const generation = this.getGenerationFromRequest(req, res, "handleDataRequest");
         if (!generation) {
             return;
         }
 
-        res.setHeader('Content-Type', 'application/json');
+        res.setHeader("Content-Type", "application/json");
         res.send(generation.jsonData);
     }
 
@@ -250,7 +255,7 @@ export class Server {
         }
 
         logger.info(`handleGenerationCompleteRequest: Credits playback completed for ID: ${generationId}`);
-        emitEvent('mage-credits-generator', 'credits-ended', { generationId }, false);
+        emitEvent("mage-credits-generator", "credits-ended", { generationId }, false);
         res.status(204).send();
     }
 
@@ -261,7 +266,7 @@ export class Server {
 
         const { fs } = firebot.modules;
         if (fs.existsSync(path)) {
-            return fs.readFileSync(path, 'utf-8');
+            return fs.readFileSync(path, "utf-8");
         }
         return defaultContent;
     }

@@ -1,6 +1,6 @@
-import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
-import { currentStreamCredits } from '../credits-store';
-import { logger } from '../main';
+import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
+import { currentStreamCredits } from "../credits-store";
+import { logger } from "../main";
 
 type effectParams = {
     all: boolean;
@@ -72,36 +72,28 @@ export const clearCreditsEffect: Firebot.EffectType<effectParams> = {
             return acc;
         }, {});
 
-        $scope.$watch('selectedBuiltInCategories', (newValue) => {
-            $scope.effect.builtInCategories = Object.keys(newValue as Record<string, boolean>).filter(key => (newValue as Record<string, boolean>)[key]);
-        }, true);
+        $scope.$watch(
+            "selectedBuiltInCategories",
+            (newValue) => {
+                $scope.effect.builtInCategories = Object.keys(newValue as Record<string, boolean>).filter((key) => (newValue as Record<string, boolean>)[key]);
+            },
+            true
+        );
     },
     optionsValidator: (effect): string[] => {
         const errors: string[] = [];
         const builtInCategories = Object.values(effect.builtInCategories).filter(Boolean);
-        const customCategories = effect.customCategories.split(/[\s,]+/).map(entry => entry.trim()).filter(entry => entry.length > 0);
+        const customCategories = effect.customCategories
+            .split(/[\s,]+/)
+            .map((entry) => entry.trim())
+            .filter((entry) => entry.length > 0);
 
         const keys = effect.all ? 1 : builtInCategories.length + customCategories.length;
         if (keys === 0) {
             errors.push("No categories selected to clear.");
         }
 
-        const reservedCreditTypes = [
-            'cheer',
-            'donation',
-            'existingAllSubs',
-            'existingFollowers',
-            'existingGiftedSubs',
-            'existingGifters',
-            'existingPaidSubs',
-            'extralife',
-            'follow',
-            'gift',
-            'moderator',
-            'raid',
-            'sub',
-            'vip'
-        ];
+        const reservedCreditTypes = ["cheer", "donation", "existingAllSubs", "existingFollowers", "existingGiftedSubs", "existingGifters", "existingPaidSubs", "extralife", "follow", "gift", "moderator", "raid", "sub", "vip"];
         for (const category of customCategories) {
             if (reservedCreditTypes.includes(category.toLocaleLowerCase())) {
                 errors.push(`The category "${category}" is reserved and cannot be used as a custom category.`);
@@ -128,7 +120,10 @@ export const clearCreditsEffect: Firebot.EffectType<effectParams> = {
 
         categoriesToClear = [
             ...(Array.isArray(effect.builtInCategories) ? effect.builtInCategories : []),
-            ...effect.customCategories.split(/[\s,]+/).map(entry => entry.trim()).filter(entry => entry.length > 0)
+            ...effect.customCategories
+                .split(/[\s,]+/)
+                .map((entry) => entry.trim())
+                .filter((entry) => entry.length > 0)
         ];
 
         categoriesToClear = Array.from(new Set(categoriesToClear));

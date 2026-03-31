@@ -1,11 +1,11 @@
-import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
-import { currentStreamCredits } from '../credits-store';
-import { logger } from '../main';
-import { CreditedUser } from '../types';
-import { registerBuiltInCredit } from './common';
+import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
+import { currentStreamCredits } from "../credits-store";
+import { logger } from "../main";
+import { CreditedUser } from "../types";
+import { registerBuiltInCredit } from "./common";
 
 type registerCreditBulkEffectParams = {
-    eventClass: 'builtin' | 'custom';
+    eventClass: "builtin" | "custom";
     eventCustomType: string;
     eventType: string;
     data: string;
@@ -20,14 +20,14 @@ export const registerCreditBulkEffect: Firebot.EffectType<registerCreditBulkEffe
         categories: ["scripting"],
         outputs: [
             {
-                label: 'Credits registered',
-                description: 'The number of credits registered.',
-                defaultName: 'creditsRegistered'
+                label: "Credits registered",
+                description: "The number of credits registered.",
+                defaultName: "creditsRegistered"
             },
             {
-                label: 'Credits failed',
-                description: 'The number of credits that failed to register.',
-                defaultName: 'creditsFailed'
+                label: "Credits failed",
+                description: "The number of credits that failed to register.",
+                defaultName: "creditsFailed"
             }
         ]
     },
@@ -61,17 +61,18 @@ export const registerCreditBulkEffect: Firebot.EffectType<registerCreditBulkEffe
             </eos-container>
         </eos-container>
     `,
+    // biome-ignore lint/suspicious/noExplicitAny: This is standard for AngularJS scopes in Firebot effects.
     optionsController: ($scope: any) => {
         $scope.eventTypes = {
-            "cheer": "Cheered",
-            "donation": "Donated/Tipped",
-            "extralife": "Extralife donation",
-            "follow": "Followed",
-            "gift": "Gifted sub(s)",
-            "moderator": "Moderator chatted",
-            "raid": "Raided",
-            "sub": "Subscribed",
-            "vip": "VIP chatted"
+            cheer: "Cheered",
+            donation: "Donated/Tipped",
+            extralife: "Extralife donation",
+            follow: "Followed",
+            gift: "Gifted sub(s)",
+            moderator: "Moderator chatted",
+            raid: "Raided",
+            sub: "Subscribed",
+            vip: "VIP chatted"
         };
     },
     optionsValidator: (effect) => {
@@ -79,10 +80,10 @@ export const registerCreditBulkEffect: Firebot.EffectType<registerCreditBulkEffe
         if (!effect.eventClass) {
             errors.push("No event class selected.");
         }
-        if (effect.eventClass === 'builtin' && !effect.eventType) {
+        if (effect.eventClass === "builtin" && !effect.eventType) {
             errors.push("No event type selected.");
         }
-        if (effect.eventClass === 'custom' && !effect.eventCustomType) {
+        if (effect.eventClass === "custom" && !effect.eventCustomType) {
             errors.push("No custom event type provided.");
         }
         if (!effect.data) {
@@ -97,7 +98,8 @@ export const registerCreditBulkEffect: Firebot.EffectType<registerCreditBulkEffe
         if (!eventClass) {
             logger.error(`Invalid event class provided.`);
             return {
-                success: false, message: 'Invalid event class provided.'
+                success: false,
+                message: "Invalid event class provided."
             };
         }
 
@@ -110,31 +112,35 @@ export const registerCreditBulkEffect: Firebot.EffectType<registerCreditBulkEffe
             const parsed = JSON.parse(effect.data);
             if (Array.isArray(parsed)) {
                 for (const obj of parsed) {
-                    if (typeof obj.username === 'string' && typeof obj.amount === 'number') {
+                    if (typeof obj.username === "string" && typeof obj.amount === "number") {
                         usersAndAmounts.push({ username: obj.username, amount: obj.amount });
                     } else {
                         failed++;
                     }
                 }
             } else {
-                throw new Error('Not an array');
+                throw new Error("Not an array");
             }
         } catch {
             // Not JSON, parse line by line
-            const lines = effect.data.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            const lines = effect.data
+                .split("\n")
+                .map((line) => line.trim())
+                .filter((line) => line.length > 0);
             for (const line of lines) {
-                let username = '';
+                let username = "";
                 let amount = 0;
 
-                if (line.includes(',')) {
-                    const [u, a] = line.split(',').map(s => s.trim());
+                if (line.includes(",")) {
+                    const [u, a] = line.split(",").map((s) => s.trim());
                     username = u.trim();
                     amount = Number(a.trim()) || 0;
                 } else if (line.match(/\s+/)) {
-                    const parts = line.split(/\s+/).map(s => s.trim());
+                    const parts = line.split(/\s+/).map((s) => s.trim());
                     username = parts[0];
                     amount = Number(parts[1].trim()) || 0;
-                } else { // Just username
+                } else {
+                    // Just username
                     username = line.trim();
                     amount = 0;
                 }
@@ -153,7 +159,7 @@ export const registerCreditBulkEffect: Firebot.EffectType<registerCreditBulkEffe
                 userDisplayName: item.username.trim(),
                 profilePicUrl: ""
             };
-            if (eventClass === 'builtin') {
+            if (eventClass === "builtin") {
                 if (registerBuiltInCredit(entry, effect.eventType)) {
                     success++;
                 } else {

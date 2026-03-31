@@ -1,7 +1,7 @@
-import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
-import { logger } from '../main';
-import { CreditedUser } from '../types';
-import { registerBuiltInCredit } from './common';
+import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
+import { logger } from "../main";
+import { CreditedUser } from "../types";
+import { registerBuiltInCredit } from "./common";
 
 type registerCreditManualEffectParams = {
     eventType: string;
@@ -42,18 +42,19 @@ export const registerCreditManualEffect: Firebot.EffectType<registerCreditManual
             </eos-container>
         </eos-container>
     `,
+    // biome-ignore lint/suspicious/noExplicitAny: This is standard for AngularJS scopes in Firebot effects.
     optionsController: ($scope: any) => {
         $scope.eventTypes = {
-            "charityDonation": "Charity donation",
-            "cheer": "Cheered",
-            "donation": "Donated/Tipped",
-            "extralife": "Extralife donation",
-            "follow": "Followed",
-            "gift": "Gifted sub(s)",
-            "moderator": "Moderator chatted",
-            "raid": "Raided",
-            "sub": "Subscribed",
-            "vip": "VIP chatted"
+            charityDonation: "Charity donation",
+            cheer: "Cheered",
+            donation: "Donated/Tipped",
+            extralife: "Extralife donation",
+            follow: "Followed",
+            gift: "Gifted sub(s)",
+            moderator: "Moderator chatted",
+            raid: "Raided",
+            sub: "Subscribed",
+            vip: "VIP chatted"
         };
     },
     optionsValidator: (effect) => {

@@ -1,6 +1,6 @@
-import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
-import { logger, server } from '../main';
-import { creditedUserListJSON } from '../variables/credited-user-list';
+import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
+import { logger, server } from "../main";
+import { creditedUserListJSON } from "../variables/credited-user-list";
 
 type effectParams = {
     configPath: string;
@@ -66,7 +66,7 @@ export const generateCreditsEffect: Firebot.EffectType<effectParams> = {
 
         try {
             const jsonData = await creditedUserListJSON.evaluator(trigger);
-            const resultUrl = server.generateCredits(jsonData as string, effect.configPath ?? '', effect.cssPath ?? '', effect.htmlPath ?? '', effect.scriptPath ?? '');
+            const resultUrl = server.generateCredits(jsonData as string, effect.configPath ?? "", effect.cssPath ?? "", effect.htmlPath ?? "", effect.scriptPath ?? "");
             logger.info(`Credits URL generated: ${resultUrl}`);
             return {
                 success: true,
@@ -75,7 +75,7 @@ export const generateCreditsEffect: Firebot.EffectType<effectParams> = {
                 }
             };
         } catch (error) {
-            const errorMsg = (error instanceof Error) ? error.message : String(error);
+            const errorMsg = error instanceof Error ? error.message : String(error);
             logger.error(`Error generating credits URL: ${errorMsg}`);
             return { success: false, error: errorMsg };
         }

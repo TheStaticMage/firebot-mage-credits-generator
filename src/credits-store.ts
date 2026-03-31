@@ -1,18 +1,18 @@
-import { profilePictureCache } from './profile-picture-cache';
-import { CreditedUser, CreditTypes, CurrentStreamCredits } from './types';
+import { profilePictureCache } from "./profile-picture-cache";
+import { CreditedUser, CreditTypes, CurrentStreamCredits } from "./types";
 
 export class CreditsStore {
     private data: CurrentStreamCredits = {
-        [CreditTypes.CHARITY_DONATION]: new Array<CreditedUser>(),
-        [CreditTypes.CHEER]: new Array<CreditedUser>(),
-        [CreditTypes.DONATION]: new Array<CreditedUser>(),
-        [CreditTypes.EXTRALIFE]: new Array<CreditedUser>(),
-        [CreditTypes.FOLLOW]: new Array<CreditedUser>(),
-        [CreditTypes.GIFT]: new Array<CreditedUser>(),
-        [CreditTypes.MODERATOR]: new Array<CreditedUser>(),
-        [CreditTypes.RAID]: new Array<CreditedUser>(),
-        [CreditTypes.SUB]: new Array<CreditedUser>(),
-        [CreditTypes.VIP]: new Array<CreditedUser>()
+        [CreditTypes.CHARITY_DONATION]: [] as CreditedUser[],
+        [CreditTypes.CHEER]: [] as CreditedUser[],
+        [CreditTypes.DONATION]: [] as CreditedUser[],
+        [CreditTypes.EXTRALIFE]: [] as CreditedUser[],
+        [CreditTypes.FOLLOW]: [] as CreditedUser[],
+        [CreditTypes.GIFT]: [] as CreditedUser[],
+        [CreditTypes.MODERATOR]: [] as CreditedUser[],
+        [CreditTypes.RAID]: [] as CreditedUser[],
+        [CreditTypes.SUB]: [] as CreditedUser[],
+        [CreditTypes.VIP]: [] as CreditedUser[]
     };
 
     private blockedUsers = new Set<string>();
@@ -23,9 +23,7 @@ export class CreditsStore {
 
     getCreditsForType(eventType: string): CreditedUser[] | null {
         if (this.data[eventType]) {
-            return this.data[eventType].filter(
-                creditedUser => !this.blockedUsers.has(creditedUser.username.toLowerCase())
-            );
+            return this.data[eventType].filter((creditedUser) => !this.blockedUsers.has(creditedUser.username.toLowerCase()));
         }
         return null;
     }
@@ -81,9 +79,7 @@ export class CreditsStore {
 
     clearCreditsByUser(username: string) {
         Object.keys(this.data).forEach((category) => {
-            this.data[category] = this.data[category].filter(
-                creditedUser => creditedUser.username.toLowerCase() !== username.toLowerCase()
-            );
+            this.data[category] = this.data[category].filter((creditedUser) => creditedUser.username.toLowerCase() !== username.toLowerCase());
         });
     }
 
