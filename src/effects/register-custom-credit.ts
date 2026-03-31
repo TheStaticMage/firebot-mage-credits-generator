@@ -1,7 +1,7 @@
-import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
-import { currentStreamCredits } from '../credits-store';
-import { logger } from '../main';
-import { CreditedUser, ReservedCreditTypes } from '../types';
+import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
+import { currentStreamCredits } from "../credits-store";
+import { logger } from "../main";
+import { CreditedUser, ReservedCreditTypes } from "../types";
 
 type registerCustomCreditEffectParams = {
     creditType: string;
@@ -52,22 +52,7 @@ export const registerCustomCreditEffect: Firebot.EffectType<registerCustomCredit
         // credit types, so we need to hardcode them here. This is not ideal,
         // but it is the only way to ensure that the reserved credit types are
         // checked against the custom credit type.
-        const reservedCreditTypes = [
-            'cheer',
-            'donation',
-            'existingAllSubs',
-            'existingFollowers',
-            'existingGiftedSubs',
-            'existingGifters',
-            'existingPaidSubs',
-            'extralife',
-            'follow',
-            'gift',
-            'moderator',
-            'raid',
-            'sub',
-            'vip'
-        ];
+        const reservedCreditTypes = ["cheer", "donation", "existingAllSubs", "existingFollowers", "existingGiftedSubs", "existingGifters", "existingPaidSubs", "extralife", "follow", "gift", "moderator", "raid", "sub", "vip"];
 
         const errors: string[] = [];
         if (!effect.creditType || !effect.creditType.trim()) {
@@ -80,7 +65,7 @@ export const registerCustomCreditEffect: Firebot.EffectType<registerCustomCredit
             errors.push("No valid amount provided.");
         }
         if (effect.creditType && effect.creditType.trim()) {
-            if (reservedCreditTypes.map(type => type.toLocaleLowerCase()).includes(effect.creditType.toLocaleLowerCase())) {
+            if (reservedCreditTypes.map((type) => type.toLocaleLowerCase()).includes(effect.creditType.toLocaleLowerCase())) {
                 errors.push(`The credit type "${effect.creditType}" is reserved and cannot be used as a custom credit type.`);
             }
             if (effect.creditType.trim().toLocaleLowerCase().endsWith("byamount")) {

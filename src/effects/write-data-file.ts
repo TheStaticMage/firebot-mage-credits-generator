@@ -1,7 +1,7 @@
-import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
-import { firebot, logger } from '../main';
-import { base64EncodeReplaceVariable } from '../variables/base64encode';
-import { creditedUserListJSON } from '../variables/credited-user-list';
+import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
+import { firebot, logger } from "../main";
+import { base64EncodeReplaceVariable } from "../variables/base64encode";
+import { creditedUserListJSON } from "../variables/credited-user-list";
 
 type effectParams = {
     filepath: string;
@@ -40,11 +40,11 @@ export const writeDataFileEffect: Firebot.EffectType<effectParams> = {
             const data = await base64EncodeReplaceVariable.evaluator(trigger, jsonData as string);
             const content = `${header}\nconst data = "${data}";\n`;
 
-            fs.writeFileSync(effect.filepath, content, 'utf8');
+            fs.writeFileSync(effect.filepath, content, "utf8");
             logger.info(`Data successfully written to ${effect.filepath}`);
             return { success: true };
         } catch (error) {
-            const errorMsg = (error instanceof Error) ? error.message : String(error);
+            const errorMsg = error instanceof Error ? error.message : String(error);
             logger.error(`Failed to write data to ${effect.filepath}: ${errorMsg}`);
             return { success: false, error: errorMsg };
         }

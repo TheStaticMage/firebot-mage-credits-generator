@@ -1,6 +1,6 @@
-import { Firebot } from '@crowbartools/firebot-custom-scripts-types';
-import { currentStreamCredits } from '../credits-store';
-import { logger } from '../main';
+import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
+import { currentStreamCredits } from "../credits-store";
+import { logger } from "../main";
 
 type effectParams = {
     username: string;

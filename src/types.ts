@@ -14,7 +14,7 @@ export enum CreditTypes {
     MODERATOR = "moderator",
     RAID = "raid",
     SUB = "sub",
-    VIP = "vip",
+    VIP = "vip"
 }
 
 export interface CreditedUser {
@@ -38,9 +38,6 @@ export interface CurrentStreamCredits {
     [key: string]: CreditedUser[];
 }
 
-export const existingCategories = ['existingAllSubs', 'existingFollowers', 'existingGiftedSubs', 'existingGifters', 'existingPaidSubs'];
+export const existingCategories = ["existingAllSubs", "existingFollowers", "existingGiftedSubs", "existingGifters", "existingPaidSubs"];
 
-export const ReservedCreditTypes: string[] = [
-    ...Object.values(CreditTypes),
-    ...existingCategories
-];
+export const ReservedCreditTypes: string[] = [...Object.values(CreditTypes), ...existingCategories];

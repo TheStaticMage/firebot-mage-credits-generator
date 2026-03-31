@@ -1,25 +1,26 @@
-import { Firebot, RunRequest } from '@crowbartools/firebot-custom-scripts-types';
-import { Logger } from '@crowbartools/firebot-custom-scripts-types/types/modules/logger';
+import { Firebot, RunRequest } from "@crowbartools/firebot-custom-scripts-types";
+import { Logger } from "@crowbartools/firebot-custom-scripts-types/types/modules/logger";
 import { registerEffects } from "./effects";
-import { Parameters } from './types';
+import { registerEvents } from "./events";
+import { Server } from "./server/server";
+import { Parameters } from "./types";
 import { registerReplacementVariables } from "./variables";
-import { Server } from './server/server';
-import { registerEvents } from './events';
 
+// biome-ignore lint/suspicious/noExplicitAny: Standard for Firebot RunRequest and AngularJS scopes in effects.
 export let firebot: RunRequest<any>;
 export let logger: Logger;
 export let server: Server | null = null;
 
-const scriptVersion = '1.0.2';
+const scriptVersion = "1.0.2";
 
 const script: Firebot.CustomScript<Parameters> = {
     getScriptManifest: () => {
         return {
-            name: 'Mage Credits Generator',
-            description: 'Track support for the channel and acknowledge it with a credits display.',
-            author: 'The Static Mage',
+            name: "Mage Credits Generator",
+            description: "Track support for the channel and acknowledge it with a credits display.",
+            author: "The Static Mage",
             version: scriptVersion,
-            firebotVersion: '5'
+            firebotVersion: "5"
         };
     },
     getDefaultParameters: () => {
@@ -55,9 +56,9 @@ const script: Firebot.CustomScript<Parameters> = {
         }
 
         const firebotVersion = runRequest.firebot.version;
-        const firebotParts = firebotVersion.split('.');
+        const firebotParts = firebotVersion.split(".");
         const majorVersion = parseInt(firebotParts[0], 10);
-        const minorVersion = parseInt(firebotParts[1] || '0', 10);
+        const minorVersion = parseInt(firebotParts[1] || "0", 10);
         if (isNaN(majorVersion) || isNaN(minorVersion) || majorVersion < 5 || (majorVersion === 5 && minorVersion < 65)) {
             const { frontendCommunicator } = runRequest.modules;
             frontendCommunicator.send("error", `The installed version of Mage Credits Generator requires Firebot 5.65 or later. You are running Firebot ${firebotVersion}. Please update Firebot to use this plugin.`);

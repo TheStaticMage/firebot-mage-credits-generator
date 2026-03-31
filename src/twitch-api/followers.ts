@@ -1,14 +1,14 @@
-import { HelixChannelFollower } from '@twurple/api';
-import * as NodeCache from 'node-cache';
+import { HelixChannelFollower } from "@twurple/api";
+import * as NodeCache from "node-cache";
 import { firebot, logger } from "../main";
-import { CreditedUser } from '../types';
+import { CreditedUser } from "../types";
 
-const cache = new NodeCache({checkperiod: 3, stdTTL: 30});
+const cache = new NodeCache({ checkperiod: 3, stdTTL: 30 });
 const cacheKey = "twitchFollowers";
 
 export async function getFollowers(): Promise<CreditedUser[]> {
     if (!firebot.parameters.enumerateExistingFollowers) {
-        logger.debug('getFollowers: Enumeration of existing followers is disabled, returning empty list');
+        logger.debug("getFollowers: Enumeration of existing followers is disabled, returning empty list");
         return [];
     }
 
@@ -42,7 +42,7 @@ async function getFollowerListFromTwitch(): Promise<CreditedUser[]> {
             }
         }
     } catch (error) {
-        logger.error('getFollowerListFromTwitch: Error fetching followers:', error);
+        logger.error("getFollowerListFromTwitch: Error fetching followers:", error);
         return [];
     }
     logger.debug(`getFollowerListFromTwitch: Found ${followerUsernames.size} followers.`);

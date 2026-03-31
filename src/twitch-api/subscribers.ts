@@ -1,9 +1,9 @@
-import { HelixSubscription } from '@twurple/api';
-import * as NodeCache from 'node-cache';
+import { HelixSubscription } from "@twurple/api";
+import * as NodeCache from "node-cache";
 import { firebot, logger } from "../main";
-import { CreditedUser } from '../types';
+import { CreditedUser } from "../types";
 
-const cache = new NodeCache({checkperiod: 3, stdTTL: 30});
+const cache = new NodeCache({ checkperiod: 3, stdTTL: 30 });
 const cacheTwitchSubscriberKey = "twitchSubscribers";
 
 interface cacheValue {
@@ -16,7 +16,7 @@ interface cacheValue {
 export async function getGifters(): Promise<CreditedUser[]> {
     const subscriberLists = await getSubscriberListsFromTwitch();
     if (!subscriberLists) {
-        logger.warn('getGifters: No subscriber lists found');
+        logger.warn("getGifters: No subscriber lists found");
         return [];
     }
 
@@ -30,7 +30,7 @@ export async function getGifters(): Promise<CreditedUser[]> {
 export async function getAllSubscribers(): Promise<CreditedUser[]> {
     const subscriberLists = await getSubscriberListsFromTwitch();
     if (!subscriberLists) {
-        logger.warn('getAllSubscribers: No subscriber lists found');
+        logger.warn("getAllSubscribers: No subscriber lists found");
         return [];
     }
 
@@ -44,7 +44,7 @@ export async function getAllSubscribers(): Promise<CreditedUser[]> {
 export async function getGiftedSubscribers(): Promise<CreditedUser[]> {
     const subscriberLists = await getSubscriberListsFromTwitch();
     if (!subscriberLists) {
-        logger.warn('getGiftedSubscribers: No subscriber lists found');
+        logger.warn("getGiftedSubscribers: No subscriber lists found");
         return [];
     }
 
@@ -58,7 +58,7 @@ export async function getGiftedSubscribers(): Promise<CreditedUser[]> {
 export async function getPaidSubscribers(): Promise<CreditedUser[]> {
     const subscriberLists = await getSubscriberListsFromTwitch();
     if (!subscriberLists) {
-        logger.warn('getPaidSubscribers: No subscriber lists found');
+        logger.warn("getPaidSubscribers: No subscriber lists found");
         return [];
     }
 
@@ -72,7 +72,7 @@ export async function getPaidSubscribers(): Promise<CreditedUser[]> {
 
 async function getSubscriberListsFromTwitch(): Promise<cacheValue | undefined> {
     if (!firebot.parameters.enumerateExistingSubscribers) {
-        logger.warn('getSubscriberListsFromTwitch: Enumeration of existing subscribers is disabled');
+        logger.warn("getSubscriberListsFromTwitch: Enumeration of existing subscribers is disabled");
         return undefined;
     }
 
@@ -113,7 +113,7 @@ async function getSubscriberListsFromTwitch(): Promise<cacheValue | undefined> {
             }
         }
     } catch (error) {
-        logger.error('getSubscriberListsFromTwitch: Error fetching subscribers:', error);
+        logger.error("getSubscriberListsFromTwitch: Error fetching subscribers:", error);
         return undefined;
     }
 

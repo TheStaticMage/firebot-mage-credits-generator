@@ -11,7 +11,7 @@
         "build:webpack": "webpack",
         "copy": "node ./scripts/copy-build.js",
         "prepare": "",
-        "lint": "eslint .",
+        "lint": "biome check .",
         "test": "jest",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage"
@@ -19,16 +19,14 @@
     "author": "thestaticmage",
     "license": "GNU3",
     "devDependencies": {
+        "@biomejs/biome": "^2.4.10",
         "@crowbartools/firebot-custom-scripts-types": "github:TheStaticMage/firebot-custom-scripts-types#running",
-        "@eslint/js": "^9.37.0",
-        "@stylistic/eslint-plugin": "^5.4.0",
         "@types/jest": "^30.0.0",
         "jest": "^30.2.0",
         "terser-webpack-plugin": "^5.3.10",
         "ts-jest": "^29.4.5",
         "ts-loader": "^9.5.1",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.45.0",
         "webpack": "^5.89.0",
         "webpack-cli": "^6.0.1"
     },
