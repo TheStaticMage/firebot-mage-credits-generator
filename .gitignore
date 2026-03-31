@@ -28,3 +28,4 @@ node_modules/
 /.claude
 /.github/copilot-instructions.md
 /AGENTS.md
+/opencode.json

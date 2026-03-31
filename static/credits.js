@@ -2,15 +2,15 @@
 // If you find yourself needing to modify this file, please consider
 // submitting a pull request to improve the code for everyone.
 
-window.onload = async function() {
+window.onload = async function () {
     // Load JSON data first
     let parsedData;
     try {
-        const response = await fetch('./data.json');
+        const response = await fetch("./data.json");
         parsedData = await response.json();
-        console.log('Loaded credits data, length:', Object.keys(parsedData).length);
+        console.log("Loaded credits data, length:", Object.keys(parsedData).length);
     } catch (error) {
-        console.error('Failed to load credits data:', error);
+        console.error("Failed to load credits data:", error);
         return;
     }
 
@@ -47,7 +47,7 @@ window.onload = async function() {
     }
 
     // Route to appropriate display mode
-    if (config.displayMode === 'slideshow') {
+    if (config.displayMode === "slideshow") {
         await runSlideshowMode(parsedData);
     } else {
         await runScrollMode(parsedData);
@@ -55,20 +55,20 @@ window.onload = async function() {
 };
 
 async function runScrollMode(parsedData) {
-    const creditsContainer = document.getElementById('credits-container');
-    creditsContainer.innerHTML = '';
+    const creditsContainer = document.getElementById("credits-container");
+    creditsContainer.innerHTML = "";
     const creditsContainerParentHeight = creditsContainer.parentElement.offsetHeight;
 
     let totalDuration = 2000;
 
     let hasPreviousSection = false;
     for (const section of sectionsConfig) {
-        if (!section.hasOwnProperty('header')) {
+        if (!Object.hasOwn(section, "header")) {
             console.warn('Section is missing required "header" property:', section);
             continue;
         }
 
-        if (!section.hasOwnProperty('key')) {
+        if (!Object.hasOwn(section, "key")) {
             console.warn('Section is missing required "key" property:', section);
             continue;
         }
@@ -80,43 +80,43 @@ async function runScrollMode(parsedData) {
         }
 
         let htmlCode = '{image}<p class="user-display-name">{displayName}</p>';
-        if (section.hasOwnProperty('html')) {
+        if (Object.hasOwn(section, "html")) {
             htmlCode = section.html;
         }
 
         let limit = entries.length;
-        if (section.hasOwnProperty('limit')) {
+        if (Object.hasOwn(section, "limit")) {
             limit = section.limit;
         }
 
         let durationPerUser = config.durationPerUser;
-        if (section.hasOwnProperty('durationPerUser')) {
+        if (Object.hasOwn(section, "durationPerUser")) {
             durationPerUser = section.durationPerUser;
         }
 
         let durationPerCategory = config.durationPerCategory;
-        if (section.hasOwnProperty('durationPerCategory')) {
+        if (Object.hasOwn(section, "durationPerCategory")) {
             durationPerCategory = section.durationPerCategory;
         }
 
-        let imageClass = 'avatar';
-        if (section.hasOwnProperty('imageClass')) {
+        let imageClass = "avatar";
+        if (Object.hasOwn(section, "imageClass")) {
             imageClass = section.imageClass;
         }
 
         totalDuration += durationPerCategory;
 
         if (hasPreviousSection) {
-            const separatorDiv = document.createElement('div');
-            separatorDiv.className = 'separator';
+            const separatorDiv = document.createElement("div");
+            separatorDiv.className = "separator";
             separatorDiv.innerHTML = `<hr class="separator-line" />`;
             creditsContainer.appendChild(separatorDiv);
         }
         hasPreviousSection = true;
 
-        const sectionDiv = document.createElement('div');
+        const sectionDiv = document.createElement("div");
 
-        const header = document.createElement('h2');
+        const header = document.createElement("h2");
         if (section.allowHeaderHTML === true) {
             header.innerHTML = section.header;
         } else {
@@ -134,15 +134,15 @@ async function runScrollMode(parsedData) {
             totalDuration += durationPerUser;
 
             console.log(`Adding entry: ${entry.userDisplayName} (${section.header})`);
-            const entryDiv = document.createElement('div');
-            entryDiv.className = 'entry';
+            const entryDiv = document.createElement("div");
+            entryDiv.className = "entry";
 
-            if (section.hasOwnProperty('htmlFunction')) {
-                if (typeof section.htmlFunction !== 'function') {
+            if (Object.hasOwn(section, "htmlFunction")) {
+                if (typeof section.htmlFunction !== "function") {
                     console.warn(`Section ${section.key} has htmlFunction but it is not a function:`, section.htmlFunction);
                 } else {
                     const evaluatedHtmlCode = section.htmlFunction(entry);
-                    if (typeof evaluatedHtmlCode !== 'string') {
+                    if (typeof evaluatedHtmlCode !== "string") {
                         console.warn(`Section ${section.key} htmlFunction did not return a string:`, evaluatedHtmlCode);
                     } else {
                         htmlCode = evaluatedHtmlCode;
@@ -156,11 +156,11 @@ async function runScrollMode(parsedData) {
             img.className = imageClass;
 
             entryDiv.innerHTML = htmlCode
-                .replace('{image}', img.outerHTML)
-                .replace('{displayName}', entry.userDisplayName)
-                .replace('{amount}', entry.amount)
-                .replace('{profilePicUrl}', entry.profilePicUrl)
-                .replace('{username}', entry.username);
+                .replace("{image}", img.outerHTML)
+                .replace("{displayName}", entry.userDisplayName)
+                .replace("{amount}", entry.amount)
+                .replace("{profilePicUrl}", entry.profilePicUrl)
+                .replace("{username}", entry.username);
             sectionDiv.appendChild(entryDiv);
         }
 
@@ -169,21 +169,21 @@ async function runScrollMode(parsedData) {
 
     const creditsContainerHeight = creditsContainer.offsetHeight;
     creditsContainer.style.top = `${creditsContainerParentHeight + config.extraPanelPadding - (creditsContainerParentHeight + creditsContainerHeight + config.extraPanelPadding)}px`;
-    creditsContainer.parentElement.style.display = 'block';
+    creditsContainer.parentElement.style.display = "block";
 
     const startTime = performance.now();
 
     function animate() {
         const elapsedTime = performance.now() - startTime;
         const progress = Math.min(elapsedTime / totalDuration, 1);
-        creditsContainer.style.transform = `translateY(${(creditsContainerParentHeight + creditsContainerHeight + config.extraPanelPadding) * (1-progress)}px)`;
+        creditsContainer.style.transform = `translateY(${(creditsContainerParentHeight + creditsContainerHeight + config.extraPanelPadding) * (1 - progress)}px)`;
 
         if (progress < 1) {
             requestAnimationFrame(animate);
         } else {
-            console.log('Credits animation completed.');
-            creditsContainer.parentElement.style.display = 'none'; // Hide after animation completes
-            fetch('./complete', { method: 'GET' })
+            console.log("Credits animation completed.");
+            creditsContainer.parentElement.style.display = "none"; // Hide after animation completes
+            fetch("./complete", { method: "GET" }).catch((err) => console.warn("Failed to notify credits completion:", err));
         }
     }
 
@@ -195,31 +195,31 @@ async function runSlideshowMode(parsedData) {
     const slides = generateSlides(parsedData);
 
     if (slides.length === 0) {
-        console.log('No slides to display');
+        console.log("No slides to display");
         return;
     }
 
     // Show slideshow container, hide scroll container
-    document.getElementById('credits-container').style.display = 'none';
-    const slideshowContainer = document.getElementById('slideshow-container');
-    slideshowContainer.style.display = 'flex';
+    document.getElementById("credits-container").style.display = "none";
+    const slideshowContainer = document.getElementById("slideshow-container");
+    slideshowContainer.style.display = "flex";
 
     // Handle initial fade-in if configured
     if (config.slideshow.initialFadeInDuration > 0) {
-        slideshowContainer.style.opacity = '0'; // Start transparent
+        slideshowContainer.style.opacity = "0"; // Start transparent
         slideshowContainer.style.transition = `opacity ${config.slideshow.initialFadeInDuration}ms ease-in-out`;
-        document.getElementById('credits-outer-container').style.display = 'block';
+        document.getElementById("credits-outer-container").style.display = "block";
 
         // Trigger fade-in
         setTimeout(() => {
-            slideshowContainer.style.opacity = '1';
+            slideshowContainer.style.opacity = "1";
         }, 10); // Small delay to ensure transition is applied
 
         // Wait for initial fade-in to complete
         await sleep(config.slideshow.initialFadeInDuration);
     } else {
-        slideshowContainer.style.opacity = '1'; // Start fully visible
-        document.getElementById('credits-outer-container').style.display = 'block';
+        slideshowContainer.style.opacity = "1"; // Start fully visible
+        document.getElementById("credits-outer-container").style.display = "block";
     }
 
     console.log(`Beginning slideshow with ${slides.length} slides`);
@@ -228,36 +228,36 @@ async function runSlideshowMode(parsedData) {
     for (let i = 0; i < slides.length; i++) {
         const isFirstSlide = i === 0;
         const isLastSlide = i === slides.length - 1;
-        const isCategoryChange = isFirstSlide || (slides[i].categoryHeader !== slides[i - 1].categoryHeader);
+        const isCategoryChange = isFirstSlide || slides[i].categoryHeader !== slides[i - 1].categoryHeader;
 
         console.log(`Displaying slide ${i + 1}/${slides.length}: ${slides[i].categoryHeader} (${slides[i].entries.length} entries)`);
         await displaySlide(slides[i], isCategoryChange, isLastSlide);
     }
 
     // Fade out the final slide before completing
-    console.log('Slideshow completed. Fading out to transparent...');
+    console.log("Slideshow completed. Fading out to transparent...");
 
     // Apply fade transition and fade to completely transparent
     slideshowContainer.style.transition = `opacity ${config.slideshow.finalFadeOutDuration}ms ease-in-out`;
-    slideshowContainer.style.opacity = '0';
+    slideshowContainer.style.opacity = "0";
 
     await sleep(config.slideshow.finalFadeOutDuration);
 
     // Complete
-    document.getElementById('credits-outer-container').style.display = 'none';
-    fetch('./complete', { method: 'GET' });
+    document.getElementById("credits-outer-container").style.display = "none";
+    fetch("./complete", { method: "GET" }).catch((err) => console.warn("Failed to notify credits completion:", err));
 }
 
 function generateSlides(parsedData) {
     const slides = [];
 
     for (const section of sectionsConfig) {
-        if (!section.hasOwnProperty('header')) {
+        if (!Object.hasOwn(section, "header")) {
             console.warn('Section is missing required "header" property:', section);
             continue;
         }
 
-        if (!section.hasOwnProperty('key')) {
+        if (!Object.hasOwn(section, "key")) {
             console.warn('Section is missing required "key" property:', section);
             continue;
         }
@@ -274,7 +274,7 @@ function generateSlides(parsedData) {
 
         // Apply limit if specified
         let limitedEntries = entries;
-        if (section.hasOwnProperty('limit')) {
+        if (Object.hasOwn(section, "limit")) {
             limitedEntries = entries.slice(0, section.limit);
             console.log(`Applied limit ${section.limit} to section: ${section.header}`);
         }
@@ -292,9 +292,7 @@ function generateSlides(parsedData) {
                 duration: (section.slideshow && section.slideshow.slideDuration) || config.slideshow.slideDuration,
                 maxRows: maxRows,
                 maxColumns: maxColumns,
-                fadeBetweenSameCategorySlides: (section.slideshow && section.slideshow.fadeBetweenSameCategorySlides !== undefined)
-                    ? section.slideshow.fadeBetweenSameCategorySlides
-                    : config.slideshow.fadeBetweenSameCategorySlides,
+                fadeBetweenSameCategorySlides: section.slideshow && section.slideshow.fadeBetweenSameCategorySlides !== undefined ? section.slideshow.fadeBetweenSameCategorySlides : config.slideshow.fadeBetweenSameCategorySlides,
                 section: section,
                 isBlank: true // Flag to indicate this is a blank slide
             });
@@ -308,9 +306,7 @@ function generateSlides(parsedData) {
                     duration: (section.slideshow && section.slideshow.slideDuration) || config.slideshow.slideDuration,
                     maxRows: maxRows,
                     maxColumns: maxColumns,
-                    fadeBetweenSameCategorySlides: (section.slideshow && section.slideshow.fadeBetweenSameCategorySlides !== undefined)
-                        ? section.slideshow.fadeBetweenSameCategorySlides
-                        : config.slideshow.fadeBetweenSameCategorySlides,
+                    fadeBetweenSameCategorySlides: section.slideshow && section.slideshow.fadeBetweenSameCategorySlides !== undefined ? section.slideshow.fadeBetweenSameCategorySlides : config.slideshow.fadeBetweenSameCategorySlides,
                     section: section
                 });
             }
@@ -322,10 +318,10 @@ function generateSlides(parsedData) {
 
 function resetCategoryCSS() {
     // Reset styles and classes to their CSS defaults
-    const slideshowContainer = document.getElementById('slideshow-container');
-    const slideContent = document.getElementById('slide-content');
-    const categoryHeader = document.getElementById('category-header');
-    const slideGrid = document.getElementById('slide-grid');
+    const slideshowContainer = document.getElementById("slideshow-container");
+    const slideContent = document.getElementById("slide-content");
+    const categoryHeader = document.getElementById("category-header");
+    const slideGrid = document.getElementById("slide-grid");
 
     // Helper function to reset classes to their defaults
     function resetClasses(element, defaultClasses) {
@@ -335,10 +331,10 @@ function resetCategoryCSS() {
     }
 
     // Reset classes to their default values
-    resetClasses(slideshowContainer, 'slideshow-container');
-    resetClasses(slideContent, 'slide-content');
-    resetClasses(categoryHeader, 'category-header');
-    resetClasses(slideGrid, 'slide-grid');
+    resetClasses(slideshowContainer, "slideshow-container");
+    resetClasses(slideContent, "slide-content");
+    resetClasses(categoryHeader, "category-header");
+    resetClasses(slideGrid, "slide-grid");
 
     // Remove inline styles to let CSS defaults take effect
     // Keep only the essential styles that are dynamically set by JavaScript
@@ -346,7 +342,7 @@ function resetCategoryCSS() {
         const display = slideshowContainer.style.display;
         const opacity = slideshowContainer.style.opacity;
         const transition = slideshowContainer.style.transition;
-        slideshowContainer.removeAttribute('style');
+        slideshowContainer.removeAttribute("style");
         if (display) slideshowContainer.style.display = display;
         if (opacity) slideshowContainer.style.opacity = opacity;
         if (transition) slideshowContainer.style.transition = transition;
@@ -355,14 +351,14 @@ function resetCategoryCSS() {
     if (slideContent) {
         const opacity = slideContent.style.opacity;
         const transition = slideContent.style.transition;
-        slideContent.removeAttribute('style');
+        slideContent.removeAttribute("style");
         if (opacity) slideContent.style.opacity = opacity;
         if (transition) slideContent.style.transition = transition;
     }
 
     if (categoryHeader) {
         const display = categoryHeader.style.display;
-        categoryHeader.removeAttribute('style');
+        categoryHeader.removeAttribute("style");
         if (display) categoryHeader.style.display = display;
     }
 
@@ -370,7 +366,7 @@ function resetCategoryCSS() {
         const gridTemplateRows = slideGrid.style.gridTemplateRows;
         const gridTemplateColumns = slideGrid.style.gridTemplateColumns;
         const gap = slideGrid.style.gap;
-        slideGrid.removeAttribute('style');
+        slideGrid.removeAttribute("style");
         if (gridTemplateRows) slideGrid.style.gridTemplateRows = gridTemplateRows;
         if (gridTemplateColumns) slideGrid.style.gridTemplateColumns = gridTemplateColumns;
         if (gap) slideGrid.style.gap = gap;
@@ -380,22 +376,22 @@ function resetCategoryCSS() {
 function applyCategoryCSS(section) {
     // Helper function to apply CSS properties to an element
     function applyStyles(element, cssObj) {
-        if (!cssObj || typeof cssObj !== 'object') return;
+        if (!cssObj || typeof cssObj !== "object") return;
 
-        Object.keys(cssObj).forEach(property => {
+        Object.keys(cssObj).forEach((property) => {
             // Convert camelCase to kebab-case for CSS properties
-            const cssProperty = property.replace(/([A-Z])/g, '-$1').toLowerCase();
+            const cssProperty = property.replace(/([A-Z])/g, "-$1").toLowerCase();
             element.style.setProperty(cssProperty, cssObj[property]);
         });
     }
 
     // Helper function to add CSS classes to an element
     function addClasses(element, classNames) {
-        if (!classNames || typeof classNames !== 'string') return;
+        if (!classNames || typeof classNames !== "string") return;
 
         // Split by spaces and add each class
         const classes = classNames.trim().split(/\s+/);
-        classes.forEach(className => {
+        classes.forEach((className) => {
             if (className) {
                 element.classList.add(className);
             }
@@ -403,10 +399,10 @@ function applyCategoryCSS(section) {
     }
 
     // Get the elements that can be customized
-    const slideshowContainer = document.getElementById('slideshow-container');
-    const slideContent = document.getElementById('slide-content');
-    const categoryHeader = document.getElementById('category-header');
-    const slideGrid = document.getElementById('slide-grid');
+    const slideshowContainer = document.getElementById("slideshow-container");
+    const slideContent = document.getElementById("slide-content");
+    const categoryHeader = document.getElementById("category-header");
+    const slideGrid = document.getElementById("slide-grid");
 
     // Apply custom classes first (so CSS properties can override class styles)
     const slideshow = section.slideshow || {};
@@ -446,9 +442,9 @@ function applyCategoryCSS(section) {
 }
 
 async function displaySlide(slide, isCategoryChange = true, isLastSlide = false) {
-    const slideContent = document.getElementById('slide-content');
-    const categoryHeader = document.getElementById('category-header');
-    const slideGrid = document.getElementById('slide-grid');
+    const slideContent = document.getElementById("slide-content");
+    const categoryHeader = document.getElementById("category-header");
+    const slideGrid = document.getElementById("slide-grid");
 
     // Set dynamic transition durations based on configuration
     slideContent.style.transition = `opacity ${config.slideshow.fadeOutDuration}ms ease-in-out`;
@@ -461,11 +457,11 @@ async function displaySlide(slide, isCategoryChange = true, isLastSlide = false)
     // Fade out current content if needed
     if (shouldFadeAll) {
         // Fade out entire slide content (header + grid) for category changes
-        slideContent.classList.add('fade-out');
+        slideContent.classList.add("fade-out");
         await sleep(config.slideshow.fadeOutDuration);
     } else if (shouldFadeGridOnly) {
         // Only fade out the grid for same-category transitions
-        slideGrid.classList.add('fade-out');
+        slideGrid.classList.add("fade-out");
         await sleep(config.slideshow.fadeOutDuration);
     }
 
@@ -481,12 +477,12 @@ async function displaySlide(slide, isCategoryChange = true, isLastSlide = false)
         } else {
             categoryHeader.textContent = slide.categoryHeader;
         }
-        categoryHeader.style.display = 'block';
+        categoryHeader.style.display = "block";
     } else {
-        categoryHeader.style.display = 'none';
+        categoryHeader.style.display = "none";
     }
 
-    slideGrid.innerHTML = '';
+    slideGrid.innerHTML = "";
 
     // For blank slides, we don't need to configure the grid layout
     if (!slide.isBlank) {
@@ -506,44 +502,44 @@ async function displaySlide(slide, isCategoryChange = true, isLastSlide = false)
     // Special handling for blank slides to enable true vertical centering
     if (slide.isBlank) {
         // Hide the grid completely for blank slides
-        slideGrid.style.display = 'none';
+        slideGrid.style.display = "none";
 
         // For blank slides, if no custom contentCSS is provided, set up perfect centering
         const slideshow = slide.section.slideshow || {};
         if (!slideshow.contentCSS) {
-            slideContent.style.justifyContent = 'center';
-            slideContent.style.alignItems = 'center';
-            slideContent.style.display = 'flex';
-            slideContent.style.flexDirection = 'column';
+            slideContent.style.justifyContent = "center";
+            slideContent.style.alignItems = "center";
+            slideContent.style.display = "flex";
+            slideContent.style.flexDirection = "column";
         }
 
         // If no custom headerCSS margin is set, remove default margins for better centering
-        if (!slideshow.headerCSS || !slideshow.headerCSS.hasOwnProperty('margin')) {
-            categoryHeader.style.margin = '0';
+        if (!slideshow.headerCSS || !Object.hasOwn(slideshow.headerCSS, "margin")) {
+            categoryHeader.style.margin = "0";
         }
     } else {
         // Ensure normal layout for non-blank slides
-        slideGrid.style.display = 'grid';
+        slideGrid.style.display = "grid";
     }
 
     // Add entries to grid
-    slide.entries.forEach(entry => {
-        const entryDiv = document.createElement('div');
-        entryDiv.className = 'slide-entry';
+    slide.entries.forEach((entry) => {
+        const entryDiv = document.createElement("div");
+        entryDiv.className = "slide-entry";
 
         // Use existing HTML templating logic
         let htmlCode = '{image}<p class="user-display-name">{displayName}</p>';
-        if (slide.section.hasOwnProperty('html')) {
+        if (Object.hasOwn(slide.section, "html")) {
             htmlCode = slide.section.html;
         }
 
         // Handle htmlFunction if specified
-        if (slide.section.hasOwnProperty('htmlFunction')) {
-            if (typeof slide.section.htmlFunction !== 'function') {
+        if (Object.hasOwn(slide.section, "htmlFunction")) {
+            if (typeof slide.section.htmlFunction !== "function") {
                 console.warn(`Section ${slide.section.key} has htmlFunction but it is not a function:`, slide.section.htmlFunction);
             } else {
                 const evaluatedHtmlCode = slide.section.htmlFunction(entry);
-                if (typeof evaluatedHtmlCode !== 'string') {
+                if (typeof evaluatedHtmlCode !== "string") {
                     console.warn(`Section ${slide.section.key} htmlFunction did not return a string:`, evaluatedHtmlCode);
                 } else {
                     htmlCode = evaluatedHtmlCode;
@@ -554,14 +550,9 @@ async function displaySlide(slide, isCategoryChange = true, isLastSlide = false)
         const img = new Image();
         img.src = entry.profilePicUrl;
         img.alt = `${entry.username}'s avatar`;
-        img.className = slide.section.imageClass || 'avatar';
+        img.className = slide.section.imageClass || "avatar";
 
-        entryDiv.innerHTML = htmlCode
-            .replace('{image}', img.outerHTML)
-            .replace('{displayName}', entry.userDisplayName)
-            .replace('{amount}', entry.amount)
-            .replace('{profilePicUrl}', entry.profilePicUrl)
-            .replace('{username}', entry.username);
+        entryDiv.innerHTML = htmlCode.replace("{image}", img.outerHTML).replace("{displayName}", entry.userDisplayName).replace("{amount}", entry.amount).replace("{profilePicUrl}", entry.profilePicUrl).replace("{username}", entry.username);
 
         slideGrid.appendChild(entryDiv);
     });
@@ -570,13 +561,13 @@ async function displaySlide(slide, isCategoryChange = true, isLastSlide = false)
     if (shouldFadeAll) {
         // Update transition for fade-in duration
         slideContent.style.transition = `opacity ${config.slideshow.fadeInDuration}ms ease-in-out`;
-        slideContent.classList.remove('fade-out');
+        slideContent.classList.remove("fade-out");
         // Wait for fade-in to complete
         await sleep(config.slideshow.fadeInDuration);
     } else if (shouldFadeGridOnly) {
         // Update transition for fade-in duration
         slideGrid.style.transition = `opacity ${config.slideshow.fadeInDuration}ms ease-in-out`;
-        slideGrid.classList.remove('fade-out');
+        slideGrid.classList.remove("fade-out");
         // Wait for fade-in to complete
         await sleep(config.slideshow.fadeInDuration);
     }
@@ -586,5 +577,5 @@ async function displaySlide(slide, isCategoryChange = true, isLastSlide = false)
 }
 
 function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
