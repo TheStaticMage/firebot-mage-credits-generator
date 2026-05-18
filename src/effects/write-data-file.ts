@@ -1,4 +1,5 @@
 import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
+import * as fs from "fs";
 import { firebot, logger } from "../main";
 import { base64EncodeReplaceVariable } from "../variables/base64encode";
 import { creditedUserListJSON } from "../variables/credited-user-list";
@@ -32,7 +33,6 @@ export const writeDataFileEffect: Firebot.EffectType<effectParams> = {
     },
     onTriggerEvent: async (event) => {
         const { effect, trigger } = event;
-        const { fs } = firebot.modules;
 
         try {
             const header = `// File maintained by Firebot -- DO NOT EDIT\n`;
