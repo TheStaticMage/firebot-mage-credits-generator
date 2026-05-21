@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import * as fs from "fs";
 import { emitEvent } from "../events";
 import { firebot, logger } from "../main";
 
@@ -264,7 +265,6 @@ export class Server {
             return defaultContent;
         }
 
-        const { fs } = firebot.modules;
         if (fs.existsSync(path)) {
             return fs.readFileSync(path, "utf-8");
         }

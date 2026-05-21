@@ -11,7 +11,7 @@ export let firebot: RunRequest<any>;
 export let logger: Logger;
 export let server: Server | null = null;
 
-const scriptVersion = "1.0.2";
+const scriptVersion = "1.0.3";
 
 const script: Firebot.CustomScript<Parameters> = {
     getScriptManifest: () => {

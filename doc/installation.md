@@ -2,12 +2,11 @@
 
 ## Requirements
 
-| Plugin Version | Minimum Firebot Version |
+| Plugin Versions | Firebot Versions |
 | --- | --- |
-| 1.0.0+ | 5.65 |
+| 1.0.3+ | 5.65 or 5.66 |
+| 1.0.0 - 1.0.2 | 5.65 |
 | 0.2.5 and earlier | 5.64 and earlier |
-
-If you have Firebot 5.64 or earlier, you should use version 0.2.5. For Firebot 5.65 and higher, use version 1.0.0 or later. See [Upgrading](/doc/upgrading.md) for more information.
 
 ## Installation: Script
 

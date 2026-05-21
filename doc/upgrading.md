@@ -10,12 +10,11 @@
 
 ## Version Compatibility
 
-| Plugin Version | Minimum Firebot Version |
+| Plugin Versions | Firebot Versions |
 | --- | --- |
-| 1.0.0+ | 5.65 |
+| 1.0.3+ | 5.65 or 5.66 |
+| 1.0.0 - 1.0.2 | 5.65 |
 | 0.2.5 and earlier | 5.64 and earlier |
-
-If you have Firebot 5.64 or earlier, you should use version 0.2.5. For Firebot 5.65 and higher, use version 1.0.0 or later.
 
 ## General Upgrade Procedure
 
@@ -34,6 +33,10 @@ If you have Firebot 5.64 or earlier, you should use version 0.2.5. For Firebot 5
 :bulb: You may optionally remove older versions of the script from the scripts directory once you have installed new ones.
 
 ## Upgrade Notes
+
+### Version 1.0.3
+
+:fire: A breaking change in Firebot's custom scripting API will be part of Firebot 5.66. For compatibility with [this commit](https://github.com/crowbartools/Firebot/commit/19e4777f3003c41b51a1ee10a222fe7f7b9233db), the Firebot-provided `fs` module is replaced with a standard NodeJS module. Version 1.0.3 of this plugin will work with both Firebot 5.65 and 5.66.
 
 ### Version 1.0.0
 
