@@ -1,5 +1,9 @@
 # Firebot "Mage Credits Generator" Script
 
+## Deprecation Notice
+
+This plugin is not tested with Firebot 5.67 or later and will no longer be developed. No support or updates will be provided. Code and documentation remain archived here for reference purposes only.
+
 ## Introduction
 
 This is a script that helps with an "end credits" display for [Firebot](https://firebot.app/) (the all-in-one bot for Twitch streamers).
@@ -54,7 +58,7 @@ Feel free to stop by my Twitch stream (<https://www.twitch.tv/thestaticmage>) wh
 - [Custom credit types](/doc/custom-credits.md)
 - [Display customization](/doc/display-customization.md)
 - [Slideshow mode](/doc/slideshow.md)
-
+<!--
 ## Support
 
 The best way to get help is in my Discord server. Join the [The Static Discord](https://discord.gg/WdJaz8439X) and then visit the `#firebot-mage-credits-generator` channel there.
@@ -77,7 +81,7 @@ If you use this on your stream, I would appreciate a shout-out. (Appreciated, bu
 - <https://www.twitch.tv/thestaticmage>
 - <https://kick.com/thestaticmage>
 - <https://youtube.com/@thestaticmagerisk>
-
+-->
 ## Alternatives
 
 This project was inspired by [CaveMobster's firebot-setup-end-credits script](https://github.com/CaveMobster/firebot-setup-end-credits), which implements an end-credits screen entirely with a Firebot setup (and no custom scripting). See also [@arblane's credits-firebot-setup](https://github.com/arblane/credits-firebot-setup) which achieves the same without a browser source.
